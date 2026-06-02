@@ -1,0 +1,1963 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCB 战略合作管理系统 MVP Demo</title>
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --panel: #ffffff;
+      --ink: #16202a;
+      --muted: #6b7480;
+      --line: #dde2e7;
+      --blue: #1464f4;
+      --green: #17845b;
+      --amber: #a76500;
+      --red: #b3261e;
+      --teal: #007e7a;
+      --shadow: 0 10px 30px rgba(18, 32, 48, 0.08);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body[data-theme="dark"] {
+      --bg: #030b20;
+      --panel: rgba(8, 18, 43, 0.88);
+      --ink: #f5f8ff;
+      --muted: #a8b6cb;
+      --line: rgba(129, 156, 190, 0.28);
+      --blue: #2f8cff;
+      --green: #48d6a8;
+      --amber: #ffd275;
+      --red: #ff8a82;
+      --teal: #30d5c8;
+      --shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      letter-spacing: 0;
+      position: relative;
+    }
+
+    body[data-theme="dark"]::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(118deg, transparent 0 46%, rgba(201, 42, 157, 0.18) 49%, transparent 53%),
+        linear-gradient(130deg, transparent 0 58%, rgba(41, 209, 201, 0.24) 61%, transparent 66%),
+        linear-gradient(142deg, transparent 0 64%, rgba(48, 140, 255, 0.22) 67%, transparent 73%),
+        linear-gradient(180deg, rgba(4, 10, 29, 0.2), rgba(4, 10, 29, 0.78));
+      z-index: 0;
+    }
+
+    body[data-theme="dark"] .app {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: var(--bg);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    body[data-theme="dark"] .login-gate {
+      background: rgba(3, 11, 32, 0.98);
+    }
+
+    .login-gate.hidden { display: none; }
+
+    .login-card {
+      width: min(980px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .login-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .login-head h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+    }
+
+    .login-head p,
+    .account-option p,
+    .scope-note {
+      color: var(--muted);
+      margin: 6px 0 0;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .account-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .account-option {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(248, 250, 252, 0.76);
+      padding: 16px;
+      cursor: pointer;
+      min-height: 148px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    body[data-theme="dark"] .account-option {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .account-option.active {
+      border-color: rgba(0, 128, 109, 0.5);
+      background: rgba(0, 128, 109, 0.08);
+    }
+
+    .account-option strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .login-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .account-scope {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 160px;
+      background: var(--panel);
+    }
+
+    .account-scope b {
+      font-size: 13px;
+    }
+
+    .account-scope span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: #101820;
+      color: #d7dde4;
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+    }
+
+    body[data-theme="dark"] .sidebar {
+      background: rgba(1, 8, 27, 0.92);
+      border-right: 1px solid rgba(118, 154, 201, 0.22);
+    }
+
+    .brand {
+      padding: 6px 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .brand strong {
+      display: block;
+      color: #ffffff;
+      font-size: 17px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #9ca8b3;
+    }
+
+    .nav {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: #d7dde4;
+      width: 100%;
+      min-height: 40px;
+      padding: 0 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    button,
+    .tag,
+    .metric,
+    .project-row,
+    .client-row,
+    .material-row,
+    .check {
+      transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+    }
+
+    .tag,
+    .metric,
+    .project-row,
+    .client-row,
+    .material-row,
+    .check {
+      cursor: pointer;
+    }
+
+    .project-row:hover,
+    .client-row:hover,
+    .material-row:hover,
+    .metric:hover {
+      transform: translateY(-1px);
+      border-color: rgba(20, 100, 244, 0.38);
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255,255,255,0.11);
+      color: #ffffff;
+    }
+
+    .nav .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6c7a88;
+      flex: 0 0 8px;
+    }
+
+    .nav button.active .dot { background: #4da3ff; }
+
+    .main {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: rgba(255,255,255,0.86);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    body[data-theme="dark"] .topbar {
+      background: rgba(3, 11, 32, 0.72);
+      border-bottom-color: rgba(129, 156, 190, 0.22);
+    }
+
+    .title h1 {
+      font-size: 20px;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .switcher {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+      flex: 0 0 auto;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .switcher button {
+      border: 0;
+      border-radius: 6px;
+      min-height: 32px;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .switcher button.active {
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    body[data-theme="dark"] .switcher {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(129, 156, 190, 0.28);
+    }
+
+    body[data-theme="dark"] .switcher button.active {
+      background: #ffffff;
+      color: #071028;
+    }
+
+    .content {
+      padding: 24px 72px 42px 28px;
+      display: grid;
+      gap: 18px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(142px, 1fr));
+      gap: 12px;
+    }
+
+    .scope-banner {
+      background: rgba(0, 128, 109, 0.08);
+      border: 1px solid rgba(0, 128, 109, 0.22);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .scope-banner b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .scope-banner p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .metric,
+    .panel,
+    .project-row,
+    .client-row,
+    .material-row {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(18, 32, 48, 0.03);
+    }
+
+    body[data-theme="dark"] .metric,
+    body[data-theme="dark"] .panel,
+    body[data-theme="dark"] .project-row,
+    body[data-theme="dark"] .client-row,
+    body[data-theme="dark"] .material-row {
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .metric {
+      min-height: 94px;
+      padding: 14px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric strong {
+      font-size: 24px;
+      line-height: 1.1;
+      margin-top: 8px;
+    }
+
+    .metric small {
+      font-size: 12px;
+      color: var(--green);
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .panel-head button,
+    .primary-btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 32px;
+      background: #ffffff;
+      padding: 0 11px;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    body[data-theme="dark"] .panel-head button,
+    body[data-theme="dark"] .primary-btn {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(129, 156, 190, 0.3);
+      color: var(--ink);
+    }
+
+    .primary-btn {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .task-list,
+    .project-list,
+    .client-list,
+    .material-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .task:first-child { border-top: 0; padding-top: 0; }
+
+    .check {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #aeb7c2;
+      border-radius: 5px;
+      margin-top: 1px;
+    }
+
+    .task b,
+    .project-row b,
+    .client-row b,
+    .material-row b {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .task p,
+    .project-row p,
+    .client-row p,
+    .material-row p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #174ea6;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    body[data-theme="dark"] .tag {
+      background: rgba(47, 140, 255, 0.16);
+      color: #b9d7ff;
+    }
+
+    body[data-theme="dark"] .tag.warn {
+      background: rgba(255, 210, 117, 0.14);
+      color: #ffe2a4;
+    }
+
+    body[data-theme="dark"] .tag.danger {
+      background: rgba(255, 138, 130, 0.14);
+      color: #ffb8b3;
+    }
+
+    body[data-theme="dark"] .tag.ok {
+      background: rgba(72, 214, 168, 0.14);
+      color: #9ef0d1;
+    }
+
+    .tag.warn {
+      background: #fff5df;
+      color: var(--amber);
+    }
+
+    .tag.danger {
+      background: #ffebe8;
+      color: var(--red);
+    }
+
+    .tag.ok {
+      background: #e7f6ef;
+      color: var(--green);
+    }
+
+    .project-row,
+    .client-row,
+    .material-row {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      box-shadow: none;
+    }
+
+    .progress {
+      height: 7px;
+      background: #e8edf2;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    body[data-theme="dark"] .progress {
+      background: rgba(184, 202, 229, 0.14);
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      background: var(--teal);
+      border-radius: 999px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .column {
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 260px;
+    }
+
+    body[data-theme="dark"] .column {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .column h3 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .view { display: none; }
+    .view.active { display: grid; gap: 18px; }
+
+    .campaign-pane { display: none; }
+    .campaign-pane.active { display: grid; gap: 18px; }
+
+    .report-builder {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .guided-card {
+      display: grid;
+      gap: 14px;
+    }
+
+    .prompt-block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(248, 250, 252, 0.72);
+      display: grid;
+      gap: 10px;
+    }
+
+    body[data-theme="dark"] .prompt-block {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(129, 156, 190, 0.24);
+    }
+
+    .prompt-block h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice-chip {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 32px;
+      padding: 0 11px;
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .choice-chip.active {
+      background: rgba(0, 128, 109, 0.1);
+      border-color: rgba(0, 128, 109, 0.4);
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .report-preview {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--panel);
+      display: grid;
+      gap: 14px;
+    }
+
+    .report-preview h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .report-preview ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .report-preview .draft-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(248, 250, 252, 0.72);
+      color: var(--ink);
+      min-height: 160px;
+      line-height: 1.65;
+      font-size: 13px;
+      white-space: pre-line;
+    }
+
+    body[data-theme="dark"] .report-preview .draft-box {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .client-pane { display: none; }
+    .client-pane.active { display: grid; gap: 18px; }
+
+    .assistant-tab {
+      position: fixed;
+      top: 174px;
+      right: 0;
+      width: 44px;
+      min-height: 152px;
+      border: 1px solid var(--line);
+      border-right: 0;
+      background: #ffffff;
+      border-radius: 8px 0 0 8px;
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(18px);
+      max-width: min(520px, calc(100vw - 32px));
+      background: #16202a;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    body[data-theme="dark"] .toast {
+      background: #ffffff;
+      color: #071028;
+    }
+
+    body[data-theme="dark"] .assistant-tab,
+    body[data-theme="dark"] .assistant {
+      background: rgba(8, 18, 43, 0.94);
+      border-color: rgba(129, 156, 190, 0.28);
+    }
+
+    .assistant-tab span {
+      writing-mode: vertical-rl;
+      font-size: 13px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .assistant {
+      position: fixed;
+      top: 92px;
+      right: 18px;
+      width: min(420px, calc(100vw - 36px));
+      max-height: calc(100vh - 122px);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: none;
+      grid-template-rows: auto auto minmax(160px, 1fr) auto;
+      z-index: 30;
+      overflow: hidden;
+    }
+
+    .assistant.open { display: grid; }
+
+    .assistant header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .assistant header b { font-size: 15px; }
+    .assistant header button {
+      border: 0;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      color: var(--muted);
+    }
+
+    .quick-actions {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .quick-actions button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: #f9fafb;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    body[data-theme="dark"] .quick-actions button {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(129, 156, 190, 0.28);
+    }
+
+    .chat-body {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      background: #fbfcfd;
+    }
+
+    body[data-theme="dark"] .chat-body {
+      background: rgba(1, 8, 27, 0.42);
+    }
+
+    .bubble {
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--ink);
+      max-width: 92%;
+    }
+
+    body[data-theme="dark"] .bubble {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .bubble.user {
+      justify-self: end;
+      background: #eef3ff;
+      border-color: #d6e2ff;
+    }
+
+    body[data-theme="dark"] .bubble.user {
+      background: rgba(47, 140, 255, 0.18);
+      border-color: rgba(47, 140, 255, 0.35);
+    }
+
+    .composer {
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+      background: #ffffff;
+    }
+
+    body[data-theme="dark"] .composer {
+      background: rgba(8, 18, 43, 0.94);
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    body[data-theme="dark"] .composer textarea {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(129, 156, 190, 0.3);
+      color: var(--ink);
+    }
+
+    .composer footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .composer small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1040px) {
+      .app { grid-template-columns: 1fr; height: auto; overflow: visible; }
+      .sidebar { display: none; }
+      .main { overflow: visible; }
+      .content { overflow: visible; }
+      .content { padding-left: 18px; padding-right: 64px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .account-grid { grid-template-columns: 1fr; }
+      .login-head { flex-direction: column; }
+      .grid-two { grid-template-columns: 1fr; }
+      .report-builder { grid-template-columns: 1fr; }
+      .columns { grid-template-columns: 1fr; }
+      .topbar { padding: 14px 18px; align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      .metrics { grid-template-columns: 1fr; }
+      .project-row,
+      .client-row,
+      .material-row,
+      .task {
+        grid-template-columns: 1fr;
+      }
+      .content { padding-right: 54px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-gate" id="loginGate" aria-label="账号权限与飞书授权入口">
+    <div class="login-card">
+      <div class="login-head">
+        <div>
+          <h1>战略资方管理 AI 系统</h1>
+          <p>先通过飞书授权确认身份和可访问空间，再进入对应资方工作区。不同 PMO 账号只加载自己授权范围内的文档、群聊、任务和数据表。</p>
+        </div>
+        <span class="tag ok">Feishu OAuth</span>
+      </div>
+      <div class="account-grid" aria-label="选择登录账号">
+        <button class="account-option active" data-login-profile="scb">
+          <strong>渣打 PMO</strong>
+          <span class="tag">SCB Workspace</span>
+          <p>进入渣打战略合作工作区，读取 SCB 相关知识库、会议纪要、群消息、任务和客户推进表。</p>
+        </button>
+        <button class="account-option" data-login-profile="hsbc">
+          <strong>汇丰 PMO</strong>
+          <span class="tag">HSBC Workspace</span>
+          <p>进入汇丰战略合作工作区，仅展示汇丰授权空间下的合作项目、资料、任务和汇报视图。</p>
+        </button>
+        <button class="account-option" data-login-profile="admin">
+          <strong>系统管理员</strong>
+          <span class="tag warn">Cross-funder</span>
+          <p>用于配置资方、用户角色、飞书数据源授权、权限边界和跨资方汇总视图。</p>
+        </button>
+      </div>
+      <div class="login-actions">
+        <p class="scope-note">授权后建议默认拉取：飞书 Wiki / 云文档、指定群聊关键消息、飞书任务、多维表格 Base；AI 只在当前账号权限范围内检索和生成。</p>
+        <button class="primary-btn" id="feishuLogin">使用飞书授权登录</button>
+      </div>
+    </div>
+  </section>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <strong>战略资方管理 AI 系统</strong>
+        <span id="workspaceLabel">SCB 样板间 / MVP 1.0</span>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <button class="active" data-view="workbench"><span class="dot"></span>PMO 工作台</button>
+        <button data-view="portfolio"><span class="dot"></span>项目组合</button>
+        <button data-view="clients"><span class="dot"></span>客户推进</button>
+        <button data-view="tasks"><span class="dot"></span>任务 Follow-up</button>
+        <button data-view="knowledge"><span class="dot"></span>知识库问答</button>
+        <button data-view="archive"><span class="dot"></span>项目管理档案库</button>
+        <button data-view="campaigns"><span class="dot"></span>市场活动及品牌共建</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title">
+          <h1 id="workspaceTitle">SCB 战略合作管理</h1>
+          <p id="workspaceSubtitle">默认入口是 PMO 工作台；管理层仪表盘作为汇报视图保留。</p>
+        </div>
+        <div class="top-actions">
+          <div class="account-scope">
+            <b id="accountName">渣打 PMO</b>
+            <span id="accountScope">SCB 授权空间</span>
+          </div>
+          <button class="primary-btn" id="switchAccount">切换账号</button>
+          <div class="switcher" aria-label="视觉主题切换">
+            <button class="active" data-theme-choice="light">浅色版</button>
+            <button data-theme-choice="dark">深色版</button>
+          </div>
+          <div class="switcher" aria-label="视图切换">
+            <button class="active" data-view-mode="pmo">PMO 视图</button>
+            <button data-view-mode="report">汇报视图</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="scope-banner" id="scopeBanner">
+          <div>
+            <b id="scopeTitle">当前工作区：渣打银行 SCB</b>
+            <p id="scopeText">已模拟完成飞书授权，可读取 SCB 相关云文档、Wiki、重点群聊、任务和多维表格作为 AI 上下文。</p>
+          </div>
+          <span class="tag ok" id="scopeTag">权限隔离已启用</span>
+        </div>
+        <section class="view active" id="workbench">
+          <div class="metrics">
+            <div class="metric"><span>资产池目标</span><strong>100M</strong><small>USD / 2026</small></div>
+            <div class="metric"><span>深度项目线</span><strong>2</strong><small>eCAS、Dscale</small></div>
+            <div class="metric"><span>今日待办</span><strong>8</strong><small>3 项需今天推动</small></div>
+            <div class="metric"><span>风险事项</span><strong>5</strong><small style="color: var(--amber)">2 项需升级</small></div>
+            <div class="metric"><span>物料待办</span><strong>3</strong><small>海报 / one-pager / 指南</small></div>
+          </div>
+
+          <div class="grid-two">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>今日待办</h2>
+                <button id="openTaskFromPanel">新建任务</button>
+              </div>
+              <div class="task-list">
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>确认 eCAS 技术联调排期</b><p>关联项目：eCAS 账户体系；owner：Kevin；截止：今天 18:00</p></div>
+                  <span class="tag warn">临近</span>
+                </div>
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>更新 Dscale 首批客户推进状态</b><p>关联项目：Project Dscale；需要补充联科、Fastlane、远睿进展</p></div>
+                  <span class="tag">进行中</span>
+                </div>
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>整理 0714 GBA Summit 客户邀约名单</b><p>关联项目：市场活动及品牌共建；目标 30-40 家高 GMV 客户</p></div>
+                  <span class="tag ok">待确认</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h2>风险与卡点</h2>
+                <button>查看全部</button>
+              </div>
+              <div class="task-list">
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>SCB 内部审批进度不透明</b><p>影响 eCAS 上线时间；建议建立每周状态同步。</p></div>
+                  <span class="tag danger">高</span>
+                </div>
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>Dscale 产品 SOP 尚未固化</b><p>影响批量进件和客户体验。</p></div>
+                  <span class="tag warn">中</span>
+                </div>
+                <div class="task">
+                  <div class="check"></div>
+                  <div><b>GBA Summit 物料版本待统一</b><p>海报、one-pager、客户邀约话术需保持一致。</p></div>
+                  <span class="tag warn">中</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>深度管理项目线</h2>
+              <button>切到项目组合</button>
+            </div>
+            <div class="project-list">
+              <div class="project-row">
+                <div><b>eCAS 账户体系</b><p>阶段：FI 团队推进 / 技术联调准备；目标：2026 年 6 月底前上线</p><div class="progress"><i style="width: 62%"></i></div></div>
+                <span class="tag warn">有卡点</span>
+              </div>
+              <div class="project-row">
+                <div><b>Project Dscale</b><p>阶段：POC 客户推进 / SOP 固化；目标：100M USD 资产池</p><div class="progress"><i style="width: 48%"></i></div></div>
+                <span class="tag">推进中</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>市场活动及品牌共建</h2>
+              <button>进入模块</button>
+            </div>
+            <div class="project-list">
+              <div class="project-row">
+                <div><b>0714 SCB GBA Summit & Project Dscale PR</b><p>活动事项：客户邀约、联合品牌露出、Dscale 产品官宣、活动物料统一。</p><div class="progress"><i style="width: 42%"></i></div></div>
+                <span class="tag ok">筹备中</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="report">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>汇报视图生成器</h2>
+              <button id="openReportAssistant">打开 AI 引导</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span>汇报对象</span><strong id="reportAudienceMetric">管理层</strong><small>可切换 CEO / Byron / SCB</small></div>
+              <div class="metric"><span>汇报周期</span><strong id="reportCycleMetric">周报</strong><small>本周合作进展</small></div>
+              <div class="metric"><span>核心指标</span><strong>5</strong><small>资产池 / 收入 / 开户 / 风险 / 资源</small></div>
+              <div class="metric"><span>待补信息</span><strong>3</strong><small style="color: var(--amber)">客户 / 物料 / 审批</small></div>
+              <div class="metric"><span>草稿状态</span><strong id="reportStatusMetric">未生成</strong><small>引导式对话生成</small></div>
+            </div>
+          </div>
+
+          <div class="report-builder">
+            <div class="panel guided-card">
+              <div class="panel-head">
+                <h2>引导式生成</h2>
+                <button id="generateReport">生成汇报草稿</button>
+              </div>
+              <div class="prompt-block">
+                <h3>1. 这次汇报给谁看？</h3>
+                <div class="choice-row" data-report-group="audience">
+                  <button class="choice-chip active" data-value="管理层">Dowsure 管理层</button>
+                  <button class="choice-chip" data-value="Byron">Byron / CEO</button>
+                  <button class="choice-chip" data-value="SCB 高层">SCB 高层</button>
+                  <button class="choice-chip" data-value="内部跨部门">内部跨部门</button>
+                </div>
+              </div>
+              <div class="prompt-block">
+                <h3>2. 生成哪类材料？</h3>
+                <div class="choice-row" data-report-group="cycle">
+                  <button class="choice-chip active" data-value="周报">周报</button>
+                  <button class="choice-chip" data-value="月报">月报</button>
+                  <button class="choice-chip" data-value="专项汇报">专项汇报</button>
+                  <button class="choice-chip" data-value="会议简报">会议简报</button>
+                </div>
+              </div>
+              <div class="prompt-block">
+                <h3>3. 这次重点突出什么？</h3>
+                <div class="choice-row" data-report-group="focus">
+                  <button class="choice-chip active" data-value="eCAS 上线卡点">eCAS 上线卡点</button>
+                  <button class="choice-chip active" data-value="Dscale 资产池">Dscale 资产池</button>
+                  <button class="choice-chip" data-value="0714 活动筹备">0714 活动筹备</button>
+                  <button class="choice-chip" data-value="客户推进">客户推进</button>
+                  <button class="choice-chip" data-value="战略资源投入">战略资源投入</button>
+                </div>
+              </div>
+              <div class="prompt-block">
+                <h3>4. 需要 AI 先追问什么？</h3>
+                <div class="choice-row">
+                  <button class="choice-chip" data-report-question="客户数据">补齐客户推进数据</button>
+                  <button class="choice-chip" data-report-question="风险升级">判断哪些风险要升级</button>
+                  <button class="choice-chip" data-report-question="行动项">拆下一步行动项</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h2>汇报草稿预览</h2>
+                <button id="copyReportDraft">复制草稿</button>
+              </div>
+              <div class="report-preview">
+                <h3 id="reportDraftTitle">SCB 战略合作周报草稿</h3>
+                <ul>
+                  <li>先由左侧引导式对话确定汇报对象、周期和重点。</li>
+                  <li>生成后自动带出核心指标、风险事项、需管理层介入事项和下一步行动。</li>
+                  <li>后续可接入知识库、客户表、任务表和档案库，生成日报、周报、月报或专项材料。</li>
+                </ul>
+                <div class="draft-box" id="reportDraft">尚未生成。请先选择左侧选项，再点击“生成汇报草稿”。</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="portfolio">
+          <div class="panel">
+            <div class="panel-head"><h2>项目组合看板</h2><button>新增项目线</button></div>
+            <div class="columns">
+              <div class="column">
+                <h3>深度管理</h3>
+                <div class="project-list">
+                  <div class="project-row"><div><b>eCAS 账户体系</b><p>基建类 / 上线目标 6 月底</p></div><span class="tag warn">卡点</span></div>
+                  <div class="project-row"><div><b>Project Dscale</b><p>信贷产品类 / 100M USD 目标</p></div><span class="tag">推进</span></div>
+                </div>
+              </div>
+              <div class="column">
+                <h3>轻量管理</h3>
+                <div class="project-list">
+                  <div class="project-row"><div><b>企业开户 / Digital Onboarding</b><p>开户类 / POC 到线上化</p></div><span class="tag">POC</span></div>
+                  <div class="project-row"><div><b>企业主 / 高管个人开户</b><p>开户延伸场景，含 Affluent</p></div><span class="tag">轻量</span></div>
+                  <div class="project-row"><div><b>MFP 长期合作</b><p>当前为合作提案阶段</p></div><span class="tag">长期</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="archive">
+          <div class="panel">
+            <div class="panel-head"><h2>项目管理档案库</h2><button>新增档案</button></div>
+            <div class="metrics">
+              <div class="metric"><span>背景信息</span><strong>8</strong><small>战略 / 资本 / 规则</small></div>
+              <div class="metric"><span>协议文档</span><strong>5</strong><small>MOU / Referral / 补充协议</small></div>
+              <div class="metric"><span>会议纪要</span><strong>16</strong><small>Workshop / 周会 / 邮件</small></div>
+              <div class="metric"><span>日常记录</span><strong>32</strong><small>沟通 / 卡点 / 决策</small></div>
+              <div class="metric"><span>待归档</span><strong>4</strong><small style="color: var(--amber)">需分类</small></div>
+            </div>
+          </div>
+          <div class="grid-two">
+            <div class="panel">
+              <div class="panel-head"><h2>档案分类</h2><button>查看全部</button></div>
+              <div class="project-list">
+                <div class="project-row"><div><b>战略背景</b><p>8 份档案；包含 SCV 投资协同、合作历史沿革、战略资源投入背景等。</p></div><span class="tag ok">进入</span></div>
+                <div class="project-row"><div><b>协议</b><p>5 份档案；包含 MOU、Referral Agreement、开户补充协议、合作条款等。</p></div><span class="tag">进入</span></div>
+                <div class="project-row"><div><b>纪要</b><p>16 份档案；包含 0424 SCB 高层 Workshop、周会纪要、产品会、客户会等。</p></div><span class="tag ok">进入</span></div>
+                <div class="project-row"><div><b>提案</b><p>4 份档案；包含 MFP 产品合作方案、Project X proposal、长期合作规划等。</p></div><span class="tag">进入</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>待处理档案</h2><button>批量归档</button></div>
+              <div class="task-list">
+                <div class="task"><div class="check"></div><div><b>0529 SCB 合作进展更新</b><p>建议分类：纪要；建议关联：Project Dscale、eCAS、开户合作。</p></div><span class="tag warn">待归档</span></div>
+                <div class="task"><div class="check"></div><div><b>0714 活动客户邀约讨论记录</b><p>建议分类：日常记录；建议关联：市场活动及品牌共建。</p></div><span class="tag warn">待分类</span></div>
+                <div class="task"><div class="check"></div><div><b>开户 referral 结算规则补充</b><p>建议分类：协议；建议关联：企业开户 / Digital Onboarding。</p></div><span class="tag">待确认</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="campaigns">
+          <div class="panel">
+            <div class="panel-head"><h2>市场活动及品牌共建</h2><button>新增活动</button></div>
+            <div class="metrics">
+              <div class="metric"><span>进行中活动</span><strong>1</strong><small>0714 GBA Summit</small></div>
+              <div class="metric"><span>目标邀约客户</span><strong>30-40</strong><small>年 GMV 超 1 亿元</small></div>
+              <div class="metric"><span>待生成物料</span><strong>3</strong><small>海报 / one-pager / 话术</small></div>
+              <div class="metric"><span>品牌资源评分</span><strong>待评</strong><small>GBA Summit 验证节点</small></div>
+              <div class="metric"><span>关键卡点</span><strong>2</strong><small style="color: var(--amber)">客户名单 / 物料口径</small></div>
+            </div>
+            <div class="switcher" aria-label="市场活动子菜单" style="margin-top: 14px;">
+              <button class="active" data-campaign-tab="activity">活动与品牌共建</button>
+              <button data-campaign-tab="materials">物料库</button>
+              <button data-campaign-tab="retro">复盘记录</button>
+            </div>
+          </div>
+          <div class="campaign-pane active" data-campaign-pane="activity">
+          <div class="grid-two">
+            <div class="panel">
+              <div class="panel-head"><h2>活动执行事项</h2><button>查看活动详情</button></div>
+              <div class="project-list">
+                <div class="project-row"><div><b>0714 SCB GBA Summit & Project Dscale PR</b><p>目标：联合品牌露出、Dscale 产品官宣、客户邀约和现场转化。</p></div><span class="tag ok">筹备中</span></div>
+                <div class="project-row"><div><b>客户邀约名单整理</b><p>目标 30-40 家高 GMV 跨境电商企业，需与 Dscale 客户池联动。</p></div><span class="tag warn">待确认</span></div>
+                <div class="project-row"><div><b>联合物料口径统一</b><p>海报、产品 one-pager、邀约话术、内部操作指南需保持一致。</p></div><span class="tag warn">待处理</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>品牌共建事项与资产</h2><button>生成物料</button></div>
+              <div class="material-list">
+                <div class="material-row"><div><b>SCB + Dowsure 联合露出口径</b><p>统一活动海报、one-pager、邀约话术、现场介绍和后续 PR 中的品牌表述。</p></div><span class="tag warn">待统一</span></div>
+                <div class="material-row"><div><b>Project Dscale 官宣口径</b><p>明确可披露额度、定价、客户画像、双方分工和活动现场可讲边界。</p></div><span class="tag">草稿</span></div>
+                <div class="material-row"><div><b>联合品牌露出资源</b><p>跟踪 SCB 活动资源、对外背书、媒体传播和 Dowsure 品牌位使用情况。</p></div><span class="tag ok">待评估</span></div>
+                <div class="material-row"><div><b>活动海报与 one-pager</b><p>面向客户邀约、朋友圈传播、客户和 SCB RM 团队，定稿后进入物料库版本记录。</p></div><span class="tag warn">待统一</span></div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <div class="campaign-pane" data-campaign-pane="materials">
+            <div class="panel">
+              <div class="panel-head"><h2>物料库</h2><button>新建物料</button></div>
+              <div class="metrics">
+                <div class="metric"><span>定稿物料</span><strong>12</strong><small>按类型归档</small></div>
+                <div class="metric"><span>生成中</span><strong>3</strong><small>待补充信息</small></div>
+                <div class="metric"><span>待审核</span><strong>2</strong><small>品牌 / 合规口径</small></div>
+                <div class="metric"><span>本月更新</span><strong>7</strong><small>保留版本记录</small></div>
+                <div class="metric"><span>复用模板</span><strong>5</strong><small>海报 / one-pager / SOP</small></div>
+              </div>
+            </div>
+            <div class="grid-two">
+              <div class="panel">
+                <div class="panel-head"><h2>物料归档</h2><button>筛选分类</button></div>
+                <div class="material-list">
+                  <div class="material-row"><div><b>Project Dscale 产品 one-pager</b><p>分类：产品介绍；版本：v1.3；状态：定稿；最近更新：2026-06-01</p></div><span class="tag ok">定稿</span></div>
+                  <div class="material-row"><div><b>Dscale 进件操作指南</b><p>分类：内部操作指南；版本：v1.1；状态：可复用；关联项目：Project Dscale</p></div><span class="tag ok">可复用</span></div>
+                  <div class="material-row"><div><b>0714 GBA Summit 客户邀约海报</b><p>分类：活动海报；版本：v0.4；状态：待审核；关联活动：0714 GBA Summit</p></div><span class="tag warn">待审核</span></div>
+                  <div class="material-row"><div><b>SCB 开户材料清单</b><p>分类：客户材料说明；版本：v0.9；状态：草稿；关联：企业开户 / Digital Onboarding</p></div><span class="tag">草稿</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><h2>物料生成与版本</h2><button>生成物料</button></div>
+                <div class="columns">
+                  <div class="column">
+                    <h3>生成</h3>
+                    <div class="material-list">
+                      <div class="material-row"><div><b>活动海报</b><p>输入活动信息、客户画像、品牌口径。</p></div><span class="tag">入口</span></div>
+                      <div class="material-row"><div><b>产品 one-pager</b><p>输入产品参数、卖点、申请流程。</p></div><span class="tag">入口</span></div>
+                    </div>
+                  </div>
+                  <div class="column">
+                    <h3>审核</h3>
+                    <div class="material-list">
+                      <div class="material-row"><div><b>品牌口径</b><p>SCB 联合露出、产品官宣、客户邀约。</p></div><span class="tag warn">2</span></div>
+                    </div>
+                  </div>
+                  <div class="column">
+                    <h3>版本</h3>
+                    <div class="material-list">
+                      <div class="material-row"><div><b>版本记录</b><p>记录 v0.1 到定稿版本、修改人、修改说明。</p></div><span class="tag ok">日志</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="campaign-pane" data-campaign-pane="retro">
+            <div class="grid-two">
+              <div class="panel">
+                <div class="panel-head"><h2>复盘记录</h2><button>新建复盘</button></div>
+                <div class="project-list">
+                  <div class="project-row"><div><b>0714 活动复盘模板</b><p>活动结束后记录客户到场、转化、品牌露出、后续任务和风险。</p></div><span class="tag">待生成</span></div>
+                  <div class="project-row"><div><b>客户转化跟进</b><p>把活动现场意向客户同步到客户推进表并生成待办。</p></div><span class="tag warn">待活动后</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><h2>复盘指标</h2><button>生成摘要</button></div>
+                <div class="task-list">
+                  <div class="task"><div class="check"></div><div><b>活动 ROI</b><p>客户邀约、到场、商机、开户、Dscale 意向。</p></div><span class="tag">待填</span></div>
+                  <div class="task"><div class="check"></div><div><b>品牌影响</b><p>联合露出、媒体传播、客户反馈、SCB 资源投入。</p></div><span class="tag">待填</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="clients">
+          <div class="panel">
+            <div class="panel-head"><h2>客户推进</h2><button>同步飞书表格</button></div>
+            <div class="metrics">
+              <div class="metric"><span>数据源</span><strong>飞书 Base</strong><small>Nx5i...CVnme</small></div>
+              <div class="metric"><span>Dscale 客户</span><strong>3</strong><small>POC / 授信 / 放款</small></div>
+              <div class="metric"><span>企业开户</span><strong>2</strong><small>面签后开户中</small></div>
+              <div class="metric"><span>个人开户</span><strong>5</strong><small>企业主 / 高管</small></div>
+              <div class="metric"><span>待跟进</span><strong>6</strong><small style="color: var(--amber)">材料 / 审批 / RM</small></div>
+            </div>
+            <div class="switcher" aria-label="客户产品线子菜单" style="margin-top: 14px;">
+              <button class="active" data-client-tab="dscale">Project Dscale</button>
+              <button data-client-tab="enterprise">企业开户</button>
+              <button data-client-tab="personal">个人开户</button>
+            </div>
+          </div>
+          <div class="client-pane active" data-client-pane="dscale">
+            <div class="panel">
+              <div class="panel-head"><h2>Project Dscale 客户跟进表</h2><button>新增 Dscale 客户</button></div>
+              <div class="client-list">
+                <div class="client-row"><div><b>联科</b><p>方案：500 万美元 + 400 万美元联合融资；当前动作：确认审批与放款排期。</p></div><span class="tag warn">待跟进</span></div>
+                <div class="client-row"><div><b>Fastlane</b><p>POC 客户；当前动作：补齐审批材料和客户财务信息。</p></div><span class="tag">推进中</span></div>
+                <div class="client-row"><div><b>远睿</b><p>POC 客户；当前动作：更新授信测算和 RM 反馈。</p></div><span class="tag">推进中</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="client-pane" data-client-pane="enterprise">
+            <div class="panel">
+              <div class="panel-head"><h2>企业开户客户跟进表</h2><button>新增开户客户</button></div>
+              <div class="client-list">
+                <div class="client-row"><div><b>首批 POC 客户 A</b><p>阶段：已完成面签；当前动作：等待 SCB 账户开立确认。</p></div><span class="tag ok">开户中</span></div>
+                <div class="client-row"><div><b>首批 POC 客户 B</b><p>阶段：已完成面签；当前动作：补充开户流程复盘信息。</p></div><span class="tag ok">开户中</span></div>
+                <div class="client-row"><div><b>GBA Summit 邀约客户池</b><p>目标：30-40 家年 GMV 超 1 亿元客户；当前动作：筛选开户意向。</p></div><span class="tag warn">待筛选</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="client-pane" data-client-pane="personal">
+            <div class="panel">
+              <div class="panel-head"><h2>个人开户客户跟进表</h2><button>新增个人开户</button></div>
+              <div class="client-list">
+                <div class="client-row"><div><b>企业主 / 高管推荐名单</b><p>累计推荐 5 位企业主及高管开户；4 位已落地。</p></div><span class="tag ok">4/5</span></div>
+                <div class="client-row"><div><b>Digital Onboarding 二维码</b><p>计划嵌入 Dowalet 卖家个人页；当前动作：等待 SCB 线上开户能力。</p></div><span class="tag">规划中</span></div>
+                <div class="client-row"><div><b>Affluent 延伸转化</b><p>当前纳入个人开户场景，不作为单独业务线管理。</p></div><span class="tag">轻量</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="tasks">
+          <div class="panel">
+            <div class="panel-head"><h2>任务 Follow-up</h2><button id="openTaskFromTasks">新建任务</button></div>
+            <div class="task-list" id="taskList">
+              <div class="task">
+                <div class="check"></div>
+                <div><b>问 Raymond 开户进展</b><p>来源：手动任务；关联：企业开户 / Digital Onboarding</p></div>
+                <span class="tag ok">已完成</span>
+              </div>
+              <div class="task">
+                <div class="check"></div>
+                <div><b>渣打大额产品定价流程发起</b><p>来源：群消息；关联：Project Dscale</p></div>
+                <span class="tag warn">待处理</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="knowledge">
+          <div class="panel">
+            <div class="panel-head"><h2>知识库 / AI 问答</h2><button>上传资料</button></div>
+            <div class="project-list">
+              <div class="project-row"><div><b>SCB 合作历史沿革</b><p>包含合作起点、三条核心合作主线、0424 workshop 补充信息。</p></div><span class="tag ok">已沉淀</span></div>
+              <div class="project-row"><div><b>多产品协同闭环与指标树</b><p>资产池、放款利差、referral fee、战略资源投入、重点客户 LTV。</p></div><span class="tag ok">已沉淀</span></div>
+              <div class="project-row"><div><b>战略资源投入评分模型</b><p>产品资源 40%、组织资源 35%、品牌资源 15%、资本资源 10%。</p></div><span class="tag ok">已沉淀</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="materials">
+          <div class="panel">
+            <div class="panel-head"><h2>物料库</h2><button>新建物料</button></div>
+            <div class="metrics">
+              <div class="metric"><span>定稿物料</span><strong>12</strong><small>按类型归档</small></div>
+              <div class="metric"><span>生成中</span><strong>3</strong><small>待补充信息</small></div>
+              <div class="metric"><span>待审核</span><strong>2</strong><small>品牌 / 合规口径</small></div>
+              <div class="metric"><span>本月更新</span><strong>7</strong><small>保留版本记录</small></div>
+              <div class="metric"><span>复用模板</span><strong>5</strong><small>海报 / one-pager / SOP</small></div>
+            </div>
+          </div>
+          <div class="grid-two">
+            <div class="panel">
+              <div class="panel-head"><h2>物料归档</h2><button>筛选分类</button></div>
+              <div class="material-list">
+                <div class="material-row"><div><b>Project Dscale 产品 one-pager</b><p>分类：产品介绍；版本：v1.3；状态：定稿；最近更新：2026-06-01</p></div><span class="tag ok">定稿</span></div>
+                <div class="material-row"><div><b>Dscale 进件操作指南</b><p>分类：内部操作指南；版本：v1.1；状态：可复用；关联项目：Project Dscale</p></div><span class="tag ok">可复用</span></div>
+                <div class="material-row"><div><b>0714 GBA Summit 客户邀约海报</b><p>分类：活动海报；版本：v0.4；状态：待审核；关联活动：0714 GBA Summit</p></div><span class="tag warn">待审核</span></div>
+                <div class="material-row"><div><b>SCB 开户材料清单</b><p>分类：客户材料说明；版本：v0.9；状态：草稿；关联：企业开户 / Digital Onboarding</p></div><span class="tag">草稿</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>子功能标签页</h2><button>生成物料</button></div>
+              <div class="columns">
+                <div class="column">
+                  <h3>生成</h3>
+                  <div class="material-list">
+                    <div class="material-row"><div><b>活动海报</b><p>输入活动信息、客户画像、品牌口径。</p></div><span class="tag">入口</span></div>
+                    <div class="material-row"><div><b>产品 one-pager</b><p>输入产品参数、卖点、申请流程。</p></div><span class="tag">入口</span></div>
+                  </div>
+                </div>
+                <div class="column">
+                  <h3>审核</h3>
+                  <div class="material-list">
+                    <div class="material-row"><div><b>品牌口径</b><p>SCB 联合露出、产品官宣、客户邀约。</p></div><span class="tag warn">2</span></div>
+                  </div>
+                </div>
+                <div class="column">
+                  <h3>版本</h3>
+                  <div class="material-list">
+                    <div class="material-row"><div><b>版本记录</b><p>记录 v0.1 到定稿版本、修改人、修改说明。</p></div><span class="tag ok">日志</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <button class="assistant-tab" id="assistantTab" aria-label="打开 AI 悬窗"><span>AI 协作</span></button>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <aside class="assistant" id="assistantPanel" aria-label="AI 协作悬窗">
+    <header>
+      <b id="assistantTitle">AI 协作悬窗</b>
+      <button id="closeAssistant" aria-label="关闭">×</button>
+    </header>
+    <div class="quick-actions" id="quickActions">
+      <button data-prompt="新建任务">新建任务</button>
+      <button data-prompt="上传会议纪要并拆解待办">上传纪要</button>
+      <button data-prompt="生成 0714 GBA Summit 客户邀约海报文案">生成材料</button>
+      <button data-prompt="总结 Project Dscale 当前卡点">问知识库</button>
+      <button data-prompt="生成本周 SCB 战略合作周报">写周报</button>
+      <button data-prompt="列出过去 7 天没有更新的客户">风险提醒</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="bubble">可以直接创建任务、问知识库、拆会议纪要或生成材料。MVP 1.0 先实现手动任务闭环，后续接入自动化和智能建议。</div>
+    </div>
+    <div class="composer">
+      <textarea id="assistantInput" placeholder="例如：帮我给 eCAS 技术联调创建一个下周五前完成的任务，owner 是 Kevin。"></textarea>
+      <footer>
+        <small>先自动化，再智能化</small>
+        <button class="primary-btn" id="sendAssistant">发送</button>
+      </footer>
+    </div>
+  </aside>
+
+  <script>
+    const navButtons = document.querySelectorAll(".nav button");
+    const views = document.querySelectorAll(".view");
+    const themeButtons = document.querySelectorAll("[data-theme-choice]");
+    const viewModeButtons = document.querySelectorAll("[data-view-mode]");
+    const toast = document.getElementById("toast");
+    let currentView = "workbench";
+    let lastPmoView = "workbench";
+    let selectedLoginProfile = "scb";
+
+    const workspaceProfiles = {
+      scb: {
+        accountName: "渣打 PMO",
+        accountScope: "SCB 授权空间",
+        workspaceLabel: "SCB 样板间 / MVP 1.0",
+        title: "SCB 战略合作管理",
+        subtitle: "当前账号仅加载渣打相关项目、文档、群聊、任务和客户数据。",
+        scopeTitle: "当前工作区：渣打银行 SCB",
+        scopeText: "已模拟完成飞书授权，可读取 SCB 相关云文档、Wiki、重点群聊、任务和多维表格作为 AI 上下文。",
+        scopeTag: "SCB PMO"
+      },
+      hsbc: {
+        accountName: "汇丰 PMO",
+        accountScope: "HSBC 授权空间",
+        workspaceLabel: "HSBC 工作区 / 待接入",
+        title: "汇丰战略合作管理",
+        subtitle: "当前账号仅加载汇丰相关内容；SCB 文档、任务和客户数据不可见。",
+        scopeTitle: "当前工作区：汇丰银行 HSBC",
+        scopeText: "已模拟完成飞书授权。正式接入后，将从汇丰对应 Wiki、云文档、群聊、任务和 Base 中生成专属项目线与汇报视图。",
+        scopeTag: "HSBC PMO"
+      },
+      admin: {
+        accountName: "系统管理员",
+        accountScope: "跨资方配置权限",
+        workspaceLabel: "Admin / 多资方底座",
+        title: "战略资方管理系统配置台",
+        subtitle: "用于配置资方工作区、飞书数据源、账号角色和跨资方权限边界。",
+        scopeTitle: "当前工作区：系统管理员",
+        scopeText: "管理员可配置多个资方的授权入口和数据源，但业务内容仍按用户角色与资方权限隔离。",
+        scopeTag: "Admin"
+      }
+    };
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function applyWorkspaceProfile(profileKey) {
+      const profile = workspaceProfiles[profileKey] || workspaceProfiles.scb;
+      document.getElementById("accountName").textContent = profile.accountName;
+      document.getElementById("accountScope").textContent = profile.accountScope;
+      document.getElementById("workspaceLabel").textContent = profile.workspaceLabel;
+      document.getElementById("workspaceTitle").textContent = profile.title;
+      document.getElementById("workspaceSubtitle").textContent = profile.subtitle;
+      document.getElementById("scopeTitle").textContent = profile.scopeTitle;
+      document.getElementById("scopeText").textContent = profile.scopeText;
+      document.getElementById("scopeTag").textContent = profile.scopeTag;
+    }
+
+    document.querySelectorAll("[data-login-profile]").forEach((button) => {
+      button.addEventListener("click", () => {
+        selectedLoginProfile = button.dataset.loginProfile;
+        document.querySelectorAll("[data-login-profile]").forEach((item) => item.classList.toggle("active", item === button));
+        showToast(`已选择：${button.querySelector("strong").textContent}`);
+      });
+    });
+
+    document.getElementById("feishuLogin").addEventListener("click", () => {
+      applyWorkspaceProfile(selectedLoginProfile);
+      document.getElementById("loginGate").classList.add("hidden");
+      currentView = "workbench";
+      lastPmoView = "workbench";
+      navButtons.forEach((item) => item.classList.toggle("active", item.dataset.view === "workbench"));
+      viewModeButtons.forEach((item) => item.classList.toggle("active", item.dataset.viewMode === "pmo"));
+      views.forEach((view) => view.classList.toggle("active", view.id === "workbench"));
+      updateAssistantContext();
+      showToast("飞书授权完成，已进入对应资方工作区");
+    });
+
+    document.getElementById("switchAccount").addEventListener("click", () => {
+      document.getElementById("loginGate").classList.remove("hidden");
+      showToast("请重新选择飞书授权身份");
+    });
+
+    navButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        navButtons.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        currentView = button.dataset.view;
+        lastPmoView = currentView;
+        viewModeButtons.forEach((item) => item.classList.toggle("active", item.dataset.viewMode === "pmo"));
+        views.forEach((view) => view.classList.toggle("active", view.id === button.dataset.view));
+        updateAssistantContext();
+        showToast(`已切换到：${button.textContent.trim()}`);
+      });
+    });
+
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const theme = button.dataset.themeChoice;
+        document.body.dataset.theme = theme;
+        themeButtons.forEach((item) => item.classList.toggle("active", item === button));
+        showToast(`已切换为${button.textContent.trim()}`);
+      });
+    });
+
+    viewModeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const mode = button.dataset.viewMode;
+        viewModeButtons.forEach((item) => item.classList.toggle("active", item === button));
+        if (mode === "report") {
+          views.forEach((view) => view.classList.toggle("active", view.id === "report"));
+          currentView = "report";
+          updateAssistantContext();
+          showToast("已打开汇报视图生成器");
+          return;
+        }
+        currentView = lastPmoView;
+        views.forEach((view) => view.classList.toggle("active", view.id === lastPmoView));
+        updateAssistantContext();
+        showToast("已返回 PMO 视图");
+      });
+    });
+
+    document.querySelectorAll("[data-campaign-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const pane = button.dataset.campaignTab;
+        document.querySelectorAll("[data-campaign-tab]").forEach((item) => item.classList.toggle("active", item === button));
+        document.querySelectorAll("[data-campaign-pane]").forEach((item) => item.classList.toggle("active", item.dataset.campaignPane === pane));
+        if (pane === "materials") {
+          currentView = "materials";
+        } else {
+          currentView = "campaigns";
+        }
+        updateAssistantContext();
+        showToast(`已打开：${button.textContent.trim()}`);
+      });
+    });
+
+    document.querySelectorAll("[data-client-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const pane = button.dataset.clientTab;
+        document.querySelectorAll("[data-client-tab]").forEach((item) => item.classList.toggle("active", item === button));
+        document.querySelectorAll("[data-client-pane]").forEach((item) => item.classList.toggle("active", item.dataset.clientPane === pane));
+        currentView = "clients";
+        updateAssistantContext();
+        showToast(`已打开客户产品线：${button.textContent.trim()}`);
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      const actionButton = target.closest("button");
+      if (actionButton && !actionButton.closest(".nav") && !actionButton.matches("[data-theme-choice]") && !actionButton.matches("[data-view-mode]") && !actionButton.matches("[data-campaign-tab]") && !actionButton.matches(".choice-chip") && !actionButton.matches("[data-login-profile]") && actionButton.id !== "feishuLogin" && actionButton.id !== "switchAccount" && actionButton.id !== "sendAssistant" && actionButton.id !== "closeAssistant") {
+        showToast(`已触发：${actionButton.textContent.trim()}`);
+      }
+
+      const check = target.closest(".check");
+      if (check) {
+        check.style.background = check.style.background ? "" : "var(--green)";
+        check.style.borderColor = check.style.background ? "var(--green)" : "";
+        showToast(check.style.background ? "已标记完成" : "已取消完成");
+        return;
+      }
+
+      const row = target.closest(".project-row, .client-row, .material-row, .metric, .tag");
+      if (row && !target.closest("button")) {
+        const label = row.querySelector("b")?.textContent || row.querySelector("span")?.textContent || row.textContent.trim().slice(0, 18);
+        showToast(`已选中：${label}`);
+      }
+    });
+
+    const assistantPanel = document.getElementById("assistantPanel");
+    const assistantTab = document.getElementById("assistantTab");
+    const closeAssistant = document.getElementById("closeAssistant");
+    const assistantInput = document.getElementById("assistantInput");
+    const chatBody = document.getElementById("chatBody");
+    const quickActions = document.getElementById("quickActions");
+    const assistantTitle = document.getElementById("assistantTitle");
+
+    document.querySelectorAll("[data-report-group] .choice-chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        const group = button.parentElement.dataset.reportGroup;
+        if (group === "focus") {
+          button.classList.toggle("active");
+        } else {
+          button.parentElement.querySelectorAll(".choice-chip").forEach((item) => item.classList.toggle("active", item === button));
+        }
+        syncReportMetrics();
+        showToast(`已选择：${button.textContent.trim()}`);
+      });
+    });
+
+    document.querySelectorAll("[data-report-question]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openAssistant();
+        currentView = "report";
+        updateAssistantContext();
+        addAssistantMessage(`请先追问并补齐：${button.dataset.reportQuestion}`);
+        showToast(`AI 将先处理：${button.textContent.trim()}`);
+      });
+    });
+
+    function getReportSelection(group) {
+      const buttons = [...document.querySelectorAll(`[data-report-group="${group}"] .choice-chip.active`)];
+      return buttons.map((button) => button.dataset.value);
+    }
+
+    function syncReportMetrics() {
+      const audience = getReportSelection("audience")[0] || "管理层";
+      const cycle = getReportSelection("cycle")[0] || "周报";
+      document.getElementById("reportAudienceMetric").textContent = audience;
+      document.getElementById("reportCycleMetric").textContent = cycle;
+    }
+
+    function buildReportDraft() {
+      const audience = getReportSelection("audience")[0] || "管理层";
+      const cycle = getReportSelection("cycle")[0] || "周报";
+      const focus = getReportSelection("focus");
+      const focusText = focus.length ? focus.join("、") : "eCAS 上线卡点、Dscale 资产池";
+      document.getElementById("reportDraftTitle").textContent = `SCB 战略合作${cycle}草稿`;
+      document.getElementById("reportStatusMetric").textContent = "已生成";
+      document.getElementById("reportDraft").textContent =
+        `汇报对象：${audience}\n汇报类型：${cycle}\n\n一、整体判断\nSCB 战略合作当前仍以 eCAS 落地、Project Dscale 资产池推进和 0714 GBA Summit 转化为主线。整体推进方向清晰，但 eCAS 审批与技术联调、Dscale 批量进件 SOP、活动物料口径仍需要持续跟进。\n\n二、本次重点\n${focusText}\n\n三、关键进展\n1. eCAS：Dowsure 已提交合规及审批材料，当前重点是推动 SCB 内部审批和技术联调排期。\n2. Project Dscale：继续围绕首批 POC 客户、授信材料和 100M USD 资产池目标推进。\n3. 市场活动及品牌共建：0714 GBA Summit 需要同步客户邀约名单、联合品牌露出口径和 Dscale 活动版 one-pager。\n\n四、需要升级 / 决策事项\n建议管理层关注 eCAS 上线时间承诺、Dscale 客户池优先级和 SCB 对联合活动资源投入。\n\n五、下一步行动\n确认 eCAS 联调排期；更新 Dscale 客户推进表；统一 0714 活动物料版本；沉淀本周会议 Follow-up。`;
+      showToast("已生成汇报草稿");
+    }
+
+    document.getElementById("generateReport").addEventListener("click", buildReportDraft);
+    document.getElementById("copyReportDraft").addEventListener("click", () => {
+      const text = document.getElementById("reportDraft").textContent;
+      navigator.clipboard?.writeText(text);
+      showToast("已复制汇报草稿");
+    });
+    document.getElementById("openReportAssistant").addEventListener("click", () => {
+      currentView = "report";
+      updateAssistantContext();
+      openAssistant();
+      addAssistantMessage("我可以按对象、周期、重点事项来引导生成汇报。你可以先选左侧选项，也可以直接告诉我这次要给谁看。");
+    });
+
+    const assistantContexts = {
+      workbench: {
+        title: "PMO 工作台 AI 协作",
+        intro: "这里优先帮你处理今日待办、逾期事项、项目卡点和周报摘要。MVP 1.0 先支持手动任务闭环。",
+        placeholder: "例如：把今天 eCAS、Dscale 和 0714 活动的待办整理成一份 PMO 日报。",
+        actions: [
+          ["新建任务", "新建任务："],
+          ["整理今日待办", "整理今天必须推进的 SCB 事项"],
+          ["生成周报", "生成本周 SCB 战略合作周报"],
+          ["识别风险", "列出当前需要升级的项目卡点"],
+          ["更新项目状态", "更新 eCAS 和 Dscale 的项目状态"],
+          ["写管理摘要", "生成给 Byron 的 5 行管理摘要"]
+        ]
+      },
+      report: {
+        title: "汇报视图 AI 协作",
+        intro: "这里用于引导式生成管理层仪表盘、周报、月报、专项汇报和会议简报。AI 会先确认汇报对象、周期、重点事项和缺失数据，再生成草稿。",
+        placeholder: "例如：给 Byron 生成一版本周 SCB 合作汇报，重点突出 Dscale 和 eCAS 卡点。",
+        actions: [
+          ["生成周报", "给管理层生成本周 SCB 合作周报"],
+          ["追问缺口", "先问我还缺哪些关键数据"],
+          ["风险升级", "判断哪些事项需要管理层介入"],
+          ["专项汇报", "生成 Project Dscale 专项汇报"],
+          ["数据看板", "整理本期核心指标看板"],
+          ["下一步行动", "把汇报结尾拆成行动项"]
+        ]
+      },
+      portfolio: {
+        title: "项目组合 AI 协作",
+        intro: "这里优先帮你管理项目线状态、里程碑、owner、风险和下一步动作。",
+        placeholder: "例如：对比 eCAS 和 Dscale 的当前卡点，并给出下一步推进任务。",
+        actions: [
+          ["新增项目线", "新增项目线："],
+          ["项目健康度", "评估 eCAS 和 Dscale 的项目健康度"],
+          ["拆里程碑", "把 eCAS 6 月底上线倒推成任务"],
+          ["生成复盘", "生成 Project Dscale 阶段复盘"],
+          ["更新风险", "列出项目组合中的高风险卡点"],
+          ["owner 检查", "检查项目线 owner 是否缺失"]
+        ]
+      },
+      clients: {
+        title: "客户推进 AI 协作",
+        intro: "这里优先帮你跟进客户状态、下一步动作、材料缺口和重点客户 LTV。",
+        placeholder: "例如：整理联科、Fastlane、远睿三家客户的下一步动作。",
+        actions: [
+          ["新增客户", "新增客户："],
+          ["客户下一步", "整理 Dscale POC 客户下一步动作"],
+          ["材料缺口", "检查重点客户材料缺口"],
+          ["客户分层", "按 Dscale 准入标准给客户分层"],
+          ["生成话术", "生成给客户的 Dscale 跟进话术"],
+          ["LTV 摘要", "生成重点客户生命周期价值摘要"]
+        ]
+      },
+      tasks: {
+        title: "任务 Follow-up AI 协作",
+        intro: "这里优先帮你创建任务、拆解纪要、检查逾期、建议 owner 和提醒节奏。",
+        placeholder: "例如：把这段会议纪要拆成任务，并标注 owner、截止时间、关联项目。",
+        actions: [
+          ["新建任务", "新建任务："],
+          ["拆会议纪要", "把会议纪要拆成待办事项"],
+          ["查逾期", "列出所有逾期和临期任务"],
+          ["建议 owner", "根据任务内容建议 owner"],
+          ["批量更新", "批量更新任务状态"],
+          ["生成提醒", "生成飞书群任务提醒文案"]
+        ]
+      },
+      knowledge: {
+        title: "知识库 AI 协作",
+        intro: "这里优先帮你问答、总结、抽取事实、生成汇报和发现知识缺口。",
+        placeholder: "例如：总结 Dowsure 与 SCB 合作的 2026 年三大目标。",
+        actions: [
+          ["问知识库", "Dowsure 与 SCB 的合作北极星目标是什么？"],
+          ["总结文档", "总结当前 SCB 合作知识库"],
+          ["抽取事实", "抽取 Project Dscale 的核心参数"],
+          ["生成汇报", "生成 SCB 合作背景一页纸"],
+          ["找缺口", "列出 SCB 知识库还缺哪些信息"],
+          ["更新知识", "把这段内容沉淀进知识库"]
+        ]
+      },
+      archive: {
+        title: "档案库 AI 协作",
+        intro: "归档规则：先按战略背景、协议、纪要、提案、产品资料、客户资料等大类归档；每份档案再关联项目线、客户、活动、任务、物料或风险事项。这里可用于待归档资料分类、摘要生成和决策依据追溯。",
+        placeholder: "例如：把 0424 workshop material 归到纪要，并关联 Dscale、eCAS 和市场活动。",
+        actions: [
+          ["智能归档", "把待处理档案按大类归档"],
+          ["生成摘要", "为这份档案生成 5 行摘要"],
+          ["建议分类", "判断这份资料应该归到哪个档案分类"],
+          ["关联对象", "为这份档案建议关联项目线和任务"],
+          ["提取决策", "从会议纪要中提取关键决策"],
+          ["拆任务", "从这份档案中拆解后续待办"]
+        ]
+      },
+      campaigns: {
+        title: "市场活动及品牌共建 AI 协作",
+        intro: "这里优先帮你推进活动筹备、客户邀约、品牌口径、缺失物料设计和活动后复盘。当前重点是 0714 SCB GBA Summit & Project Dscale PR。",
+        placeholder: "例如：检查 0714 活动还缺哪些物料，并生成客户邀约海报文案。",
+        actions: [
+          ["缺失物料", "检查 0714 活动还缺哪些物料"],
+          ["生成海报文案", "生成 0714 GBA Summit 客户邀约海报文案"],
+          ["生成 one-pager", "生成 Project Dscale 活动版 one-pager"],
+          ["整理邀约名单", "整理 30-40 家目标客户邀约清单"],
+          ["统一品牌口径", "统一 SCB + Dowsure 联合露出口径"],
+          ["活动复盘", "生成活动后复盘模板"]
+        ]
+      },
+      materials: {
+        title: "物料库 AI 协作",
+        intro: "这里优先帮你生成物料、管理版本、检查审核状态和归档定稿材料。物料库是市场活动及品牌共建模块下的子功能。",
+        placeholder: "例如：基于 Dscale 产品参数生成一版 one-pager，并标记版本 v0.1。",
+        actions: [
+          ["生成物料", "生成一份新的物料草稿"],
+          ["版本记录", "为这份物料生成版本更新说明"],
+          ["审核检查", "检查物料是否缺少品牌或合规审核"],
+          ["定稿归档", "把这份物料标记为定稿并归档"],
+          ["复用模板", "基于历史模板生成新物料"],
+          ["改写话术", "把客户邀约话术改成更适合高 GMV 卖家的版本"]
+        ]
+      }
+    };
+
+    function updateAssistantContext() {
+      const context = assistantContexts[currentView] || assistantContexts.workbench;
+      assistantTitle.textContent = context.title;
+      assistantInput.placeholder = context.placeholder;
+      quickActions.innerHTML = context.actions.map(([label, prompt]) =>
+        `<button data-prompt="${prompt.replace(/"/g, "&quot;")}">${label}</button>`
+      ).join("");
+      quickActions.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => openAssistant(button.dataset.prompt));
+      });
+      chatBody.innerHTML = `<div class="bubble">${context.intro}</div>`;
+    }
+
+    function addAssistantMessage(message) {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = message;
+      chatBody.appendChild(bubble);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function openAssistant(prefill = "") {
+      updateAssistantContext();
+      assistantPanel.classList.add("open");
+      if (prefill) assistantInput.value = prefill;
+      assistantInput.focus();
+    }
+
+    assistantTab.addEventListener("mouseenter", () => openAssistant());
+    assistantTab.addEventListener("click", () => openAssistant());
+    closeAssistant.addEventListener("click", () => assistantPanel.classList.remove("open"));
+
+    document.getElementById("openTaskFromPanel").addEventListener("click", () => openAssistant("新建任务："));
+    document.getElementById("openTaskFromTasks").addEventListener("click", () => openAssistant("新建任务："));
+    updateAssistantContext();
+
+    document.getElementById("sendAssistant").addEventListener("click", () => {
+      const value = assistantInput.value.trim();
+      if (!value) return;
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.textContent = value;
+      chatBody.appendChild(userBubble);
+
+      const answer = document.createElement("div");
+      answer.className = "bubble";
+      if (value.includes("新建任务") || value.includes("任务")) {
+        answer.textContent = "已进入任务创建草稿：请确认关联项目、owner、截止时间和优先级。MVP 1.0 会先保存为手动任务。";
+      } else if (value.includes("材料") || value.includes("海报") || value.includes("one-pager")) {
+        answer.textContent = "已识别为物料生成需求：建议关联市场活动及品牌共建，并调用 Dscale 产品参数和 0714 活动信息。";
+      } else if (value.includes("周报") || value.includes("总结")) {
+        answer.textContent = "已识别为汇报生成需求：将从项目进度、客户推进、风险事项和任务状态中抽取摘要。";
+      } else {
+        answer.textContent = "已收到。后续版本会结合知识库、项目数据和飞书同步信息给出更完整的自动化处理建议。";
+      }
+      chatBody.appendChild(answer);
+      assistantInput.value = "";
+      chatBody.scrollTop = chatBody.scrollHeight;
+      showToast("AI 协作已生成反馈");
+    });
+  </script>
+</body>
+</html>
