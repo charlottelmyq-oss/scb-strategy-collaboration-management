@@ -79,31 +79,32 @@
     .login-gate.hidden { display: none; }
 
     .login-card {
-      width: min(980px, 100%);
+      width: min(540px, 100%);
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
-      box-shadow: var(--shadow);
-      padding: 28px;
+      box-shadow: 0 18px 48px rgba(18, 32, 48, 0.1);
+      padding: 26px;
       display: grid;
-      gap: 20px;
+      gap: 16px;
     }
 
     .login-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
+      display: grid;
+      justify-items: center;
+      text-align: center;
+      gap: 10px;
     }
 
     .login-head h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 17px;
       line-height: 1.3;
     }
 
     .login-head p,
-    .account-option p,
+    .auth-account p,
+    .permission-box p,
     .scope-note {
       color: var(--muted);
       margin: 6px 0 0;
@@ -111,46 +112,74 @@
       font-size: 13px;
     }
 
-    .account-grid {
+    .app-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6ba7, #de3f8d);
+      color: #ffffff;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
+      place-items: center;
+      font-weight: 800;
+      font-size: 20px;
     }
 
-    .account-option {
-      border: 1px solid var(--line);
+    .auth-account,
+    .permission-box {
       border-radius: 8px;
-      background: rgba(248, 250, 252, 0.76);
-      padding: 16px;
-      cursor: pointer;
-      min-height: 148px;
-      display: grid;
-      align-content: start;
-      gap: 10px;
+      background: rgba(248, 250, 252, 0.88);
+      padding: 14px 16px;
     }
 
-    body[data-theme="dark"] .account-option {
+    body[data-theme="dark"] .auth-account,
+    body[data-theme="dark"] .permission-box {
       background: rgba(255,255,255,0.05);
     }
 
-    .account-option.active {
-      border-color: rgba(0, 128, 109, 0.5);
-      background: rgba(0, 128, 109, 0.08);
+    .auth-account {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    .account-option strong {
+    .account-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4f91, #ffffff);
+      border: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+
+    .auth-account strong,
+    .permission-box strong {
       display: block;
       font-size: 16px;
+    }
+
+    .permission-box ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
     }
 
     .login-actions {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 12px;
       flex-wrap: wrap;
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
+      padding-top: 4px;
     }
 
     .account-scope {
@@ -371,37 +400,13 @@
       gap: 18px;
       overflow-y: auto;
       min-height: 0;
+      align-content: start;
     }
 
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, minmax(142px, 1fr));
       gap: 12px;
-    }
-
-    .scope-banner {
-      background: rgba(0, 128, 109, 0.08);
-      border: 1px solid rgba(0, 128, 109, 0.22);
-      border-radius: 8px;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .scope-banner b {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .scope-banner p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
     }
 
     .metric,
@@ -473,8 +478,17 @@
       line-height: 1.35;
     }
 
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
     .panel-head button,
-    .primary-btn {
+    .primary-btn,
+    .secondary-btn {
       border: 1px solid var(--line);
       border-radius: 8px;
       min-height: 32px;
@@ -486,7 +500,8 @@
     }
 
     body[data-theme="dark"] .panel-head button,
-    body[data-theme="dark"] .primary-btn {
+    body[data-theme="dark"] .primary-btn,
+    body[data-theme="dark"] .secondary-btn {
       background: rgba(255,255,255,0.08);
       border-color: rgba(129, 156, 190, 0.3);
       color: var(--ink);
@@ -496,6 +511,162 @@
       background: var(--blue);
       color: #ffffff;
       border-color: var(--blue);
+    }
+
+    .primary-btn:disabled,
+    .secondary-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.52;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      z-index: 35;
+      display: none;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .modal-backdrop.open { display: grid; }
+
+    .is-hidden { display: none !important; }
+
+    .modal-card {
+      width: min(680px, 100%);
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-head,
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .modal-head button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .upload-zone {
+      border: 1px dashed rgba(20, 100, 244, 0.42);
+      background: rgba(20, 100, 244, 0.05);
+      border-radius: 8px;
+      min-height: 132px;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .upload-zone > div {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .upload-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .upload-status {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      border: 1px dashed rgba(20, 100, 244, 0.32);
+      background: rgba(20, 100, 244, 0.04);
+      border-radius: 8px;
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .empty-state h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .empty-state p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .empty-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      min-height: 36px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .field textarea {
+      min-height: 82px;
+      resize: vertical;
+      grid-column: 1 / -1;
+    }
+
+    body[data-theme="dark"] .field input,
+    body[data-theme="dark"] .field select,
+    body[data-theme="dark"] .field textarea {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(129, 156, 190, 0.3);
+      color: var(--ink);
     }
 
     .task-list,
@@ -517,12 +688,218 @@
 
     .task:first-child { border-top: 0; padding-top: 0; }
 
+    .task[data-task-detail] {
+      cursor: pointer;
+    }
+
+    .task-status-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .remind-btn,
+    .escalate-btn {
+      min-height: 26px;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--amber);
+      padding: 0 9px;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .escalate-btn {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--red);
+    }
+
+    body[data-theme="dark"] .remind-btn {
+      background: rgba(245, 158, 11, 0.14);
+    }
+
+    body[data-theme="dark"] .escalate-btn {
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .task-filters {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .task-filters label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-filters select,
+    .task-filters button {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 0 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .task-filters select[multiple] {
+      min-width: 150px;
+    }
+
+    .task-filters button {
+      cursor: pointer;
+    }
+
+    body[data-theme="dark"] .task-filters select,
+    body[data-theme="dark"] .task-filters button {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(129, 156, 190, 0.3);
+      color: var(--ink);
+    }
+
+    .task-detail {
+      display: none;
+      grid-column: 2 / -1;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(248, 250, 252, 0.72);
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .task.expanded .task-detail {
+      display: grid;
+    }
+
+    body[data-theme="dark"] .task-detail {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--panel);
+    }
+
+    .detail-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .task-insights {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .insight-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .insight-card h4 {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .insight-card p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .detail-item input,
+    .task-detail textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .task-detail textarea {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    body[data-theme="dark"] .detail-item input,
+    body[data-theme="dark"] .task-detail textarea {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(129, 156, 190, 0.3);
+      color: var(--ink);
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .check {
       width: 18px;
       height: 18px;
       border: 1px solid #aeb7c2;
       border-radius: 5px;
       margin-top: 1px;
+    }
+
+    .ai-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      margin-top: 1px;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 128, 109, 0.14);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      cursor: default;
+    }
+
+    #aiTaskList .ai-mark {
+      cursor: pointer;
+    }
+
+    #aiTaskList .task.selected {
+      border-color: rgba(20, 100, 244, 0.58);
+      background: rgba(20, 100, 244, 0.06);
+    }
+
+    #aiTaskList .task.selected .ai-mark {
+      background: var(--blue);
+      color: #ffffff;
     }
 
     .task b,
@@ -631,7 +1008,6 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
-      min-height: 260px;
     }
 
     body[data-theme="dark"] .column {
@@ -646,10 +1022,19 @@
     }
 
     .view { display: none; }
-    .view.active { display: grid; gap: 18px; }
+    .view.active {
+      display: grid;
+      gap: 18px;
+      align-items: start;
+      align-content: start;
+    }
 
     .campaign-pane { display: none; }
-    .campaign-pane.active { display: grid; gap: 18px; }
+    .campaign-pane.active {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
 
     .report-builder {
       display: grid;
@@ -738,14 +1123,23 @@
       line-height: 1.65;
       font-size: 13px;
       white-space: pre-line;
+      width: 100%;
+      resize: vertical;
+      font: inherit;
     }
 
     body[data-theme="dark"] .report-preview .draft-box {
       background: rgba(255,255,255,0.05);
     }
 
-    .client-pane { display: none; }
-    .client-pane.active { display: grid; gap: 18px; }
+    .client-pane,
+    .business-pane { display: none; }
+    .client-pane.active,
+    .business-pane.active {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
 
     .assistant-tab {
       position: fixed;
@@ -953,7 +1347,6 @@
       .content { overflow: visible; }
       .content { padding-left: 18px; padding-right: 64px; }
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .account-grid { grid-template-columns: 1fr; }
       .login-head { flex-direction: column; }
       .grid-two { grid-template-columns: 1fr; }
       .report-builder { grid-template-columns: 1fr; }
@@ -977,32 +1370,35 @@
   <section class="login-gate" id="loginGate" aria-label="账号权限与飞书授权入口">
     <div class="login-card">
       <div class="login-head">
+        <div class="app-icon">AI</div>
         <div>
           <h1>战略资方管理 AI 系统</h1>
-          <p>先通过飞书授权确认身份和可访问空间，再进入对应资方工作区。不同 PMO 账号只加载自己授权范围内的文档、群聊、任务和数据表。</p>
+          <p>请求以下飞书账号进行授权</p>
         </div>
-        <span class="tag ok">Feishu OAuth</span>
       </div>
-      <div class="account-grid" aria-label="选择登录账号">
-        <button class="account-option active" data-login-profile="scb">
-          <strong>渣打 PMO</strong>
-          <span class="tag">SCB Workspace</span>
-          <p>进入渣打战略合作工作区，读取 SCB 相关知识库、会议纪要、群消息、任务和客户推进表。</p>
-        </button>
-        <button class="account-option" data-login-profile="hsbc">
-          <strong>汇丰 PMO</strong>
-          <span class="tag">HSBC Workspace</span>
-          <p>进入汇丰战略合作工作区，仅展示汇丰授权空间下的合作项目、资料、任务和汇报视图。</p>
-        </button>
-        <button class="account-option" data-login-profile="admin">
-          <strong>系统管理员</strong>
-          <span class="tag warn">Cross-funder</span>
-          <p>用于配置资方、用户角色、飞书数据源授权、权限边界和跨资方汇总视图。</p>
-        </button>
+      <div class="auth-account">
+        <div class="account-left">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <strong>Dowsure豆沙包</strong>
+            <p>木夕 | Charlotte</p>
+          </div>
+        </div>
+        <button>使用其他账号</button>
       </div>
+      <div class="permission-box">
+        <strong>可授予的权限（共 1 项）</strong>
+        <ul>
+          <li>获取用户基本信息</li>
+        </ul>
+      </div>
+      <div class="permission-box">
+        <strong>历史已授予的权限</strong>
+      </div>
+      <p class="scope-note">授权后，系统将根据飞书身份自动匹配资方工作区；AI 只在当前账号权限范围内检索和生成。</p>
       <div class="login-actions">
-        <p class="scope-note">授权后建议默认拉取：飞书 Wiki / 云文档、指定群聊关键消息、飞书任务、多维表格 Base；AI 只在当前账号权限范围内检索和生成。</p>
-        <button class="primary-btn" id="feishuLogin">使用飞书授权登录</button>
+        <button id="rejectLogin">拒绝</button>
+        <button class="primary-btn" id="feishuLogin">授权</button>
       </div>
     </div>
   </section>
@@ -1014,7 +1410,7 @@
       </div>
       <nav class="nav" aria-label="主导航">
         <button class="active" data-view="workbench"><span class="dot"></span>PMO 工作台</button>
-        <button data-view="portfolio"><span class="dot"></span>项目组合</button>
+        <button data-view="portfolio"><span class="dot"></span>合作业务线</button>
         <button data-view="clients"><span class="dot"></span>客户推进</button>
         <button data-view="tasks"><span class="dot"></span>任务 Follow-up</button>
         <button data-view="knowledge"><span class="dot"></span>知识库问答</button>
@@ -1039,25 +1435,23 @@
             <button class="active" data-theme-choice="light">浅色版</button>
             <button data-theme-choice="dark">深色版</button>
           </div>
-          <div class="switcher" aria-label="视图切换">
-            <button class="active" data-view-mode="pmo">PMO 视图</button>
-            <button data-view-mode="report">汇报视图</button>
-          </div>
         </div>
       </header>
 
       <section class="content">
-        <div class="scope-banner" id="scopeBanner">
-          <div>
-            <b id="scopeTitle">当前工作区：渣打银行 SCB</b>
-            <p id="scopeText">已模拟完成飞书授权，可读取 SCB 相关云文档、Wiki、重点群聊、任务和多维表格作为 AI 上下文。</p>
-          </div>
-          <span class="tag ok" id="scopeTag">权限隔离已启用</span>
-        </div>
         <section class="view active" id="workbench">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>工作台视图</h2>
+              <div class="switcher" aria-label="视图切换">
+                <button class="active" data-view-mode="pmo">PMO 视图</button>
+                <button data-view-mode="report">汇报视图</button>
+              </div>
+            </div>
+          </div>
           <div class="metrics">
             <div class="metric"><span>资产池目标</span><strong>100M</strong><small>USD / 2026</small></div>
-            <div class="metric"><span>深度项目线</span><strong>2</strong><small>eCAS、Dscale</small></div>
+            <div class="metric"><span>重点业务线</span><strong>2</strong><small>eCAS、Dscale</small></div>
             <div class="metric"><span>今日待办</span><strong>8</strong><small>3 项需今天推动</small></div>
             <div class="metric"><span>风险事项</span><strong>5</strong><small style="color: var(--amber)">2 项需升级</small></div>
             <div class="metric"><span>物料待办</span><strong>3</strong><small>海报 / one-pager / 指南</small></div>
@@ -1115,8 +1509,8 @@
 
           <div class="panel">
             <div class="panel-head">
-              <h2>深度管理项目线</h2>
-              <button>切到项目组合</button>
+              <h2>重点合作业务线</h2>
+              <button id="goPortfolioFromWorkbench">切到合作业务线</button>
             </div>
             <div class="project-list">
               <div class="project-row">
@@ -1133,7 +1527,7 @@
           <div class="panel">
             <div class="panel-head">
               <h2>市场活动及品牌共建</h2>
-              <button>进入模块</button>
+              <button id="goCampaignsFromWorkbench">进入模块</button>
             </div>
             <div class="project-list">
               <div class="project-row">
@@ -1148,7 +1542,7 @@
           <div class="panel">
             <div class="panel-head">
               <h2>汇报视图生成器</h2>
-              <button id="openReportAssistant">打开 AI 引导</button>
+              <button id="returnWorkbenchFromReport">返回 PMO 工作台</button>
             </div>
             <div class="metrics">
               <div class="metric"><span>汇报对象</span><strong id="reportAudienceMetric">管理层</strong><small>可切换 CEO / Byron / SCB</small></div>
@@ -1206,7 +1600,7 @@
             <div class="panel">
               <div class="panel-head">
                 <h2>汇报草稿预览</h2>
-                <button id="copyReportDraft">复制草稿</button>
+                <div class="head-actions"><button id="screenReportContext">筛选飞书/微信补充</button><button id="copyReportDraft">复制草稿</button></div>
               </div>
               <div class="report-preview">
                 <h3 id="reportDraftTitle">SCB 战略合作周报草稿</h3>
@@ -1215,7 +1609,8 @@
                   <li>生成后自动带出核心指标、风险事项、需管理层介入事项和下一步行动。</li>
                   <li>后续可接入知识库、客户表、任务表和档案库，生成日报、周报、月报或专项材料。</li>
                 </ul>
-                <div class="draft-box" id="reportDraft">尚未生成。请先选择左侧选项，再点击“生成汇报草稿”。</div>
+                <small id="reportScreenStatus">可直接在下方手动修改草稿；也可筛选飞书和微信相关内容补充。</small>
+                <textarea class="draft-box" id="reportDraft">尚未生成。请先选择左侧选项，再点击“生成汇报草稿”。</textarea>
               </div>
             </div>
           </div>
@@ -1223,22 +1618,87 @@
 
         <section class="view" id="portfolio">
           <div class="panel">
-            <div class="panel-head"><h2>项目组合看板</h2><button>新增项目线</button></div>
-            <div class="columns">
-              <div class="column">
-                <h3>深度管理</h3>
+            <div class="panel-head"><h2>合作业务线管理</h2><button>新增业务线</button></div>
+            <div class="metrics">
+              <div class="metric"><span>业务线数量</span><strong>5</strong><small>按合作方向展开</small></div>
+              <div class="metric"><span>重点业务线</span><strong>2</strong><small>eCAS / Dscale</small></div>
+              <div class="metric"><span>轻量跟踪</span><strong>2</strong><small>企业开户 / 个人开户</small></div>
+              <div class="metric"><span>长期观察</span><strong>1</strong><small>MFP 合作提案</small></div>
+              <div class="metric"><span>关键卡点</span><strong>4</strong><small style="color: var(--amber)">审批 / SOP / 数据</small></div>
+            </div>
+            <div class="switcher" aria-label="合作业务线标签" style="margin-top: 14px;">
+              <button class="active" data-business-tab="ecas">eCAS 账户体系</button>
+              <button data-business-tab="dscale">Project Dscale</button>
+              <button data-business-tab="enterprise">企业开户</button>
+              <button data-business-tab="personal">个人开户</button>
+              <button data-business-tab="mfp">MFP 长期合作</button>
+            </div>
+          </div>
+          <div class="business-pane active" data-business-pane="ecas">
+            <div class="grid-two">
+              <div class="panel">
+                <div class="panel-head"><h2>eCAS 账户体系详情</h2><button>更新进展</button></div>
                 <div class="project-list">
-                  <div class="project-row"><div><b>eCAS 账户体系</b><p>基建类 / 上线目标 6 月底</p></div><span class="tag warn">卡点</span></div>
-                  <div class="project-row"><div><b>Project Dscale</b><p>信贷产品类 / 100M USD 目标</p></div><span class="tag">推进</span></div>
+                  <div class="project-row"><div><b>业务线定位</b><p>Dowalet 底层账户基础设施，支撑收还款、结算、后续放款和资金路径建设。</p></div><span class="tag ok">基建类</span></div>
+                  <div class="project-row"><div><b>当前阶段</b><p>FI 团队推进 / 技术联调准备；目标 2026 年 6 月底前上线。</p></div><span class="tag warn">有卡点</span></div>
+                  <div class="project-row"><div><b>下一步动作</b><p>确认 SCB 内部审批节点、技术联调排期、API 集成可行性和上线倒排计划。</p></div><span class="tag">待推进</span></div>
                 </div>
               </div>
-              <div class="column">
-                <h3>轻量管理</h3>
-                <div class="project-list">
-                  <div class="project-row"><div><b>企业开户 / Digital Onboarding</b><p>开户类 / POC 到线上化</p></div><span class="tag">POC</span></div>
-                  <div class="project-row"><div><b>企业主 / 高管个人开户</b><p>开户延伸场景，含 Affluent</p></div><span class="tag">轻量</span></div>
-                  <div class="project-row"><div><b>MFP 长期合作</b><p>当前为合作提案阶段</p></div><span class="tag">长期</span></div>
+              <div class="panel">
+                <div class="panel-head"><h2>指标与卡点</h2><button>生成任务</button></div>
+                <div class="task-list">
+                  <div class="task"><div class="check"></div><div><b>上线目标</b><p>2026 年 6 月底前完成 Phase 1 收还款路径上线。</p></div><span class="tag warn">临近</span></div>
+                  <div class="task"><div class="check"></div><div><b>审批不透明</b><p>需要 SCB 每周同步内部审批状态和技术排期。</p></div><span class="tag danger">高</span></div>
+                  <div class="task"><div class="check"></div><div><b>长期规划</b><p>Phase 2 纳入服务商等生态角色，提高资金在 eCAS 内留存比例。</p></div><span class="tag">规划</span></div>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="business-pane" data-business-pane="dscale">
+            <div class="grid-two">
+              <div class="panel">
+                <div class="panel-head"><h2>Project Dscale 详情</h2><button>更新客户池</button></div>
+                <div class="project-list">
+                  <div class="project-row"><div><b>业务线定位</b><p>大额跨境多币种信贷产品，目标形成 “信贷 + 账户 + 结算” 综合解决方案。</p></div><span class="tag ok">信贷类</span></div>
+                  <div class="project-row"><div><b>2026 目标</b><p>逐步分层细化、标准化、数字化，并实现超 100M USD 资产池。</p></div><span class="tag">推进中</span></div>
+                  <div class="project-row"><div><b>客户推进</b><p>联科、Fastlane、远睿等 POC 客户需同步审批、材料、授信和放款状态。</p></div><span class="tag warn">待补齐</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><h2>产品动作</h2><button>生成 SOP</button></div>
+                <div class="task-list">
+                  <div class="task"><div class="check"></div><div><b>批量进件 SOP</b><p>明确准入、材料、审批、定价、放款和复盘流程。</p></div><span class="tag warn">待固化</span></div>
+                  <div class="task"><div class="check"></div><div><b>0714 活动官宣</b><p>与 GBA Summit 合并推进产品发布和重点客户邀约。</p></div><span class="tag ok">筹备</span></div>
+                  <div class="task"><div class="check"></div><div><b>资产池追踪</b><p>按客户、额度、在贷、利差和推荐收入追踪价值贡献。</p></div><span class="tag">指标</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="business-pane" data-business-pane="enterprise">
+            <div class="panel">
+              <div class="panel-head"><h2>企业开户 / Digital Onboarding</h2><button>查看客户表</button></div>
+              <div class="project-list">
+                <div class="project-row"><div><b>管理方式</b><p>轻量管理，不作为重点业务线深度推进；关注 POC 到线上化路径。</p></div><span class="tag">轻量</span></div>
+                <div class="project-row"><div><b>当前进展</b><p>首批 2 家 POC 客户已完成面签，等待账户开立和流程复盘。</p></div><span class="tag ok">POC</span></div>
+                <div class="project-row"><div><b>下一阶段</b><p>Stage 0 总结 SOP，Stage 1 对接推广码和进度互通，Stage 2 嵌入 Dowalet。</p></div><span class="tag">规划</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="business-pane" data-business-pane="personal">
+            <div class="panel">
+              <div class="panel-head"><h2>企业主 / 高管个人开户</h2><button>新增推荐</button></div>
+              <div class="project-list">
+                <div class="project-row"><div><b>业务线定位</b><p>企业开户延伸场景，Affluent 财富管理纳入个人开户转化，不单独作为当前核心线。</p></div><span class="tag">开户类</span></div>
+                <div class="project-row"><div><b>当前动作</b><p>跟踪企业主及高管开户推荐名单、材料状态和 SCB RM 对接情况。</p></div><span class="tag ok">跟踪</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="business-pane" data-business-pane="mfp">
+            <div class="panel">
+              <div class="panel-head"><h2>MFP 长期合作</h2><button>归档提案</button></div>
+              <div class="project-list">
+                <div class="project-row"><div><b>当前状态</b><p>现阶段暂未实际推进，作为长期合作目标和提案材料沉淀。</p></div><span class="tag">长期</span></div>
+                <div class="project-row"><div><b>理想路径</b><p>MFP 由 Olea 等资方引流至 eCAS 子账户开户，再交叉营销开户、Dscale 和个人开户。</p></div><span class="tag ok">闭环</span></div>
               </div>
             </div>
           </div>
@@ -1246,12 +1706,13 @@
 
         <section class="view" id="archive">
           <div class="panel">
-            <div class="panel-head"><h2>项目管理档案库</h2><button>新增档案</button></div>
+            <div class="panel-head"><h2>项目管理档案库</h2><button id="openArchiveUpload">新增档案</button></div>
             <div class="metrics">
               <div class="metric"><span>背景信息</span><strong>8</strong><small>战略 / 资本 / 规则</small></div>
               <div class="metric"><span>协议文档</span><strong>5</strong><small>MOU / Referral / 补充协议</small></div>
               <div class="metric"><span>会议纪要</span><strong>16</strong><small>Workshop / 周会 / 邮件</small></div>
               <div class="metric"><span>日常记录</span><strong>32</strong><small>沟通 / 卡点 / 决策</small></div>
+              <div class="metric"><span>汇报文档</span><strong>6</strong><small>日报 / 周报 / 专项汇报</small></div>
               <div class="metric"><span>待归档</span><strong>4</strong><small style="color: var(--amber)">需分类</small></div>
             </div>
           </div>
@@ -1263,6 +1724,7 @@
                 <div class="project-row"><div><b>协议</b><p>5 份档案；包含 MOU、Referral Agreement、开户补充协议、合作条款等。</p></div><span class="tag">进入</span></div>
                 <div class="project-row"><div><b>纪要</b><p>16 份档案；包含 0424 SCB 高层 Workshop、周会纪要、产品会、客户会等。</p></div><span class="tag ok">进入</span></div>
                 <div class="project-row"><div><b>提案</b><p>4 份档案；包含 MFP 产品合作方案、Project X proposal、长期合作规划等。</p></div><span class="tag">进入</span></div>
+                <div class="project-row"><div><b>汇报文档</b><p>6 份档案；包含日报、周报、月报、专项汇报和管理层简报等。</p></div><span class="tag ok">进入</span></div>
               </div>
             </div>
             <div class="panel">
@@ -1270,6 +1732,8 @@
               <div class="task-list">
                 <div class="task"><div class="check"></div><div><b>0529 SCB 合作进展更新</b><p>建议分类：纪要；建议关联：Project Dscale、eCAS、开户合作。</p></div><span class="tag warn">待归档</span></div>
                 <div class="task"><div class="check"></div><div><b>0714 活动客户邀约讨论记录</b><p>建议分类：日常记录；建议关联：市场活动及品牌共建。</p></div><span class="tag warn">待分类</span></div>
+                <div class="task"><div class="check"></div><div><b>0602 SCB 日报关键沟通记录</b><p>来源：日报提取；建议分类：日常工作记录；建议关联：eCAS、Dscale、任务 Follow-up。</p></div><span class="tag warn">待归档</span></div>
+                <div class="task"><div class="check"></div><div><b>本周 SCB 合作进展与风险汇总</b><p>来源：周报提取；建议分类：汇报文档；建议关联：合作业务线、客户推进、市场活动。</p></div><span class="tag">待确认</span></div>
                 <div class="task"><div class="check"></div><div><b>开户 referral 结算规则补充</b><p>建议分类：协议；建议关联：企业开户 / Digital Onboarding。</p></div><span class="tag">待确认</span></div>
               </div>
             </div>
@@ -1381,22 +1845,42 @@
         </section>
 
         <section class="view" id="clients">
-          <div class="panel">
-            <div class="panel-head"><h2>客户推进</h2><button>同步飞书表格</button></div>
+          <div class="panel" id="clientsEmpty">
+            <div class="panel-head"><h2>客户推进</h2><button class="data-source-action">连接数据源</button></div>
             <div class="metrics">
-              <div class="metric"><span>数据源</span><strong>飞书 Base</strong><small>Nx5i...CVnme</small></div>
+              <div class="metric"><span>数据源状态</span><strong>未连接</strong><small style="color: var(--amber)">需要先接入数据</small></div>
+              <div class="metric"><span>Dscale 客户</span><strong>-</strong><small>等待数据分析</small></div>
+              <div class="metric"><span>企业开户</span><strong>-</strong><small>等待数据分析</small></div>
+              <div class="metric"><span>个人开户</span><strong>-</strong><small>等待数据分析</small></div>
+              <div class="metric"><span>待跟进</span><strong>-</strong><small>等待数据分析</small></div>
+            </div>
+            <div class="empty-state" style="margin-top: 14px;">
+              <h3 id="clientEmptyTitle">请先连接客户推进数据源</h3>
+              <p id="clientEmptyText">连接数仓 API、提供飞书 Base 链接，或直接上传客户数据表。系统接到数据后会先进行字段识别、产品线归类和客户状态分析，再生成下方客户推进表。</p>
+              <div class="empty-actions">
+                <button class="primary-btn data-source-action" data-source-type="数仓 API">连接数仓 API</button>
+                <button class="secondary-btn data-source-action" data-source-type="飞书 Base 链接">填写飞书表格链接</button>
+                <button class="secondary-btn data-source-action" data-source-type="上传数据表">上传数据表</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel client-data-loaded is-hidden">
+            <div class="panel-head"><h2>客户推进</h2><button id="refreshClientBase">从飞书 Base 刷新数据</button></div>
+            <div class="metrics">
+              <div class="metric"><span>已授权数据源</span><strong>飞书 Base</strong><small>客户推进表 Nx5i...CVnme</small></div>
               <div class="metric"><span>Dscale 客户</span><strong>3</strong><small>POC / 授信 / 放款</small></div>
               <div class="metric"><span>企业开户</span><strong>2</strong><small>面签后开户中</small></div>
               <div class="metric"><span>个人开户</span><strong>5</strong><small>企业主 / 高管</small></div>
-              <div class="metric"><span>待跟进</span><strong>6</strong><small style="color: var(--amber)">材料 / 审批 / RM</small></div>
+              <div class="metric" data-open-client-pane="followups"><span>待跟进</span><strong>6</strong><small style="color: var(--amber)">材料 / 审批 / RM</small></div>
             </div>
             <div class="switcher" aria-label="客户产品线子菜单" style="margin-top: 14px;">
               <button class="active" data-client-tab="dscale">Project Dscale</button>
               <button data-client-tab="enterprise">企业开户</button>
               <button data-client-tab="personal">个人开户</button>
+              <button data-client-tab="followups">待跟进事项</button>
             </div>
           </div>
-          <div class="client-pane active" data-client-pane="dscale">
+          <div class="client-pane client-data-loaded active is-hidden" data-client-pane="dscale">
             <div class="panel">
               <div class="panel-head"><h2>Project Dscale 客户跟进表</h2><button>新增 Dscale 客户</button></div>
               <div class="client-list">
@@ -1406,7 +1890,7 @@
               </div>
             </div>
           </div>
-          <div class="client-pane" data-client-pane="enterprise">
+          <div class="client-pane client-data-loaded is-hidden" data-client-pane="enterprise">
             <div class="panel">
               <div class="panel-head"><h2>企业开户客户跟进表</h2><button>新增开户客户</button></div>
               <div class="client-list">
@@ -1416,7 +1900,7 @@
               </div>
             </div>
           </div>
-          <div class="client-pane" data-client-pane="personal">
+          <div class="client-pane client-data-loaded is-hidden" data-client-pane="personal">
             <div class="panel">
               <div class="panel-head"><h2>个人开户客户跟进表</h2><button>新增个人开户</button></div>
               <div class="client-list">
@@ -1426,22 +1910,192 @@
               </div>
             </div>
           </div>
+          <div class="client-pane client-data-loaded is-hidden" data-client-pane="followups">
+            <div class="grid-two">
+              <div class="panel">
+                <div class="panel-head"><h2>待跟进事项</h2><button id="generateFollowupTasks">生成任务</button></div>
+                <div class="task-list">
+                  <div class="task"><div class="check"></div><div><b>Fastlane 财务材料补齐</b><p>类型：材料；关联：Project Dscale；owner：客户经理。</p></div><span class="tag warn">材料</span></div>
+                  <div class="task"><div class="check"></div><div><b>联科审批与放款排期确认</b><p>类型：审批；关联：Project Dscale；需同步 SCB RM。</p></div><span class="tag danger">审批</span></div>
+                  <div class="task"><div class="check"></div><div><b>远睿 RM 反馈更新</b><p>类型：RM；关联：Project Dscale；等待授信测算反馈。</p></div><span class="tag">RM</span></div>
+                  <div class="task"><div class="check"></div><div><b>首批 POC 客户开户确认</b><p>类型：审批；关联：企业开户；等待账户开立结果。</p></div><span class="tag warn">审批</span></div>
+                  <div class="task"><div class="check"></div><div><b>GBA Summit 开户意向筛选</b><p>类型：材料；关联：企业开户；需筛选 30-40 家邀约客户。</p></div><span class="tag warn">材料</span></div>
+                  <div class="task"><div class="check"></div><div><b>企业主个人开户 RM 对接</b><p>类型：RM；关联：个人开户；确认推荐名单推进节奏。</p></div><span class="tag">RM</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><h2>分类汇总</h2><button>批量提醒</button></div>
+                <div class="metrics" style="grid-template-columns: 1fr;">
+                  <div class="metric"><span>材料类</span><strong>2</strong><small>客户材料 / 邀约筛选</small></div>
+                  <div class="metric"><span>审批类</span><strong>2</strong><small>授信审批 / 开户确认</small></div>
+                  <div class="metric"><span>RM 对接</span><strong>2</strong><small>反馈更新 / 推荐节奏</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section class="view" id="tasks">
           <div class="panel">
             <div class="panel-head"><h2>任务 Follow-up</h2><button id="openTaskFromTasks">新建任务</button></div>
+            <div class="metrics" style="margin-bottom: 14px;">
+              <div class="metric"><span>AI 建议任务</span><strong id="aiTaskCount">4</strong><small style="color: var(--amber)">待 PMO 人审</small></div>
+              <div class="metric"><span>需修改确认</span><strong>2</strong><small>owner / 截止时间</small></div>
+              <div class="metric"><span>已确认任务</span><strong id="confirmedTaskCount">2</strong><small>进入执行跟踪</small></div>
+              <div class="metric"><span>提醒方式</span><strong>飞书</strong><small>群消息 / 任务</small></div>
+            </div>
+            <div class="panel" style="box-shadow: none; margin-bottom: 14px;">
+              <div class="panel-head"><h2>AI 识别待确认任务</h2><div class="head-actions"><button id="selectAllAiTasks">全选</button><button id="batchConfirmAiTasks">批量确认</button></div></div>
+              <div class="task-list" id="aiTaskList">
+                <div class="task" data-task-detail>
+                  <div class="ai-mark">AI</div>
+                  <div><b>确认 eCAS 技术联调排期</b><p>来源：周报 AI 分析；建议关联：eCAS 账户体系；需 PMO 确认任务内容。</p></div>
+                  <span class="tag warn">待人审</span>
+                  <div class="task-detail">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span>建议 owner</span><b>Kevin / FI 对接人</b></div>
+                      <div class="detail-item"><span>建议截止</span><b>2026-06-07</b></div>
+                      <div class="detail-item"><span>来源依据</span><b>周报：eCAS 审批与联调卡点</b></div>
+                    </div>
+                    <p>AI 建议任务描述：请确认 SCB 内部审批状态、技术联调窗口和上线倒排计划，并同步给 PMO。</p>
+                    <div class="detail-actions"><button class="primary-btn">确认任务</button><button class="secondary-btn">修改内容</button><button class="secondary-btn">驳回建议</button></div>
+                  </div>
+                </div>
+                <div class="task" data-task-detail>
+                  <div class="ai-mark">AI</div>
+                  <div><b>补齐 Fastlane Dscale 审批材料</b><p>来源：会议纪要 AI 分析；建议关联：Project Dscale；需确认材料清单。</p></div>
+                  <span class="tag warn">待修改</span>
+                  <div class="task-detail">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span>建议 owner</span><b>BD / 客户经理</b></div>
+                      <div class="detail-item"><span>建议截止</span><b>2026-06-05</b></div>
+                      <div class="detail-item"><span>来源依据</span><b>0429 产品会纪要：POC 客户材料缺口</b></div>
+                    </div>
+                    <p>AI 建议任务描述：请补充 Fastlane 审批所需财务信息、经营数据和客户授权材料，并更新客户推进表。</p>
+                    <div class="detail-actions"><button class="primary-btn">确认任务</button><button class="secondary-btn">修改内容</button><button class="secondary-btn">驳回建议</button></div>
+                  </div>
+                </div>
+                <div class="task" data-task-detail>
+                  <div class="ai-mark">AI</div>
+                  <div><b>统一 0714 活动物料口径</b><p>来源：飞书群聊 AI 分析；建议关联：市场活动及品牌共建；需确认品牌 / 合规审核人。</p></div>
+                  <span class="tag warn">待人审</span>
+                  <div class="task-detail">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span>建议 owner</span><b>Marketing / PMO</b></div>
+                      <div class="detail-item"><span>建议截止</span><b>2026-06-12</b></div>
+                      <div class="detail-item"><span>来源依据</span><b>市场活动群：GBA Summit 物料版本不一致</b></div>
+                    </div>
+                    <p>AI 建议任务描述：统一活动海报、Dscale one-pager、客户邀约话术和内部操作指南的联合品牌表述。</p>
+                    <div class="detail-actions"><button class="primary-btn">确认任务</button><button class="secondary-btn">修改内容</button><button class="secondary-btn">驳回建议</button></div>
+                  </div>
+                </div>
+                <div class="task" data-task-detail>
+                  <div class="ai-mark">AI</div>
+                  <div><b>整理 Dscale 首批客户推进状态</b><p>来源：客户推进表 AI 分析；建议关联：客户推进；需 PMO 确认口径。</p></div>
+                  <span class="tag warn">待修改</span>
+                  <div class="task-detail">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span>建议 owner</span><b>PMO / BD</b></div>
+                      <div class="detail-item"><span>建议截止</span><b>2026-06-06</b></div>
+                      <div class="detail-item"><span>来源依据</span><b>飞书 Base：客户推进信息分散</b></div>
+                    </div>
+                    <p>AI 建议任务描述：补齐联科、Fastlane、远睿三家客户的审批、材料、授信和下一步动作。</p>
+                    <div class="detail-actions"><button class="primary-btn">确认任务</button><button class="secondary-btn">修改内容</button><button class="secondary-btn">驳回建议</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel" style="box-shadow: none;">
+              <div class="panel-head"><h2>已确认 / 执行中任务</h2><button>查看全部</button></div>
+              <div class="task-filters">
+                <label>业务线
+                  <select id="taskLineFilter" multiple size="1">
+                    <option value="all" selected>全部业务线</option>
+                    <option value="eCAS">eCAS</option>
+                    <option value="Project Dscale">Project Dscale</option>
+                    <option value="企业开户">企业开户</option>
+                    <option value="个人开户">个人开户</option>
+                    <option value="市场活动及品牌共建">市场活动及品牌共建</option>
+                  </select>
+                </label>
+                <label>任务状态
+                  <select id="taskStatusFilter" multiple size="1">
+                    <option value="all" selected>全部状态</option>
+                    <option value="待处理">待处理</option>
+                    <option value="临期">临期</option>
+                    <option value="逾期">逾期</option>
+                    <option value="已完成">已完成</option>
+                  </select>
+                </label>
+                <label>任务 owner
+                  <select id="taskOwnerFilter">
+                    <option value="all">全部 owner</option>
+                    <option value="PMO">PMO</option>
+                    <option value="BD">BD / 客户经理</option>
+                    <option value="SCB RM">SCB RM</option>
+                    <option value="Kevin">Kevin / FI</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Dscale 产品负责人">Dscale 产品负责人</option>
+                  </select>
+                </label>
+                <button id="resetTaskFilters">重置筛选</button>
+              </div>
             <div class="task-list" id="taskList">
-              <div class="task">
+              <div class="task" data-task-detail>
                 <div class="check"></div>
                 <div><b>问 Raymond 开户进展</b><p>来源：手动任务；关联：企业开户 / Digital Onboarding</p></div>
                 <span class="tag ok">已完成</span>
+                <div class="task-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item"><span>owner</span><b>PMO</b></div>
+                    <div class="detail-item"><span>截止</span><b>已完成</b></div>
+                    <div class="detail-item"><span>来源</span><b>手动创建</b></div>
+                  </div>
+                  <p>任务详情：确认首批企业开户 POC 客户的账户开立进度，并同步后续流程复盘。</p>
+                  <div class="task-insights">
+                    <div class="insight-card"><h4>责任人反馈</h4><p>Raymond 已反馈 2 家 POC 客户开户进入尾声，预计本周完成账号开立确认。</p></div>
+                    <div class="insight-card"><h4>评论重点总结</h4><p>RM 关注开户材料复用、客户面签体验和后续 Digital Onboarding SOP。</p></div>
+                    <div class="insight-card"><h4>完成风险分析</h4><p>风险低；主要剩余事项是账户开立结果确认和流程复盘沉淀。</p></div>
+                  </div>
+                </div>
               </div>
-              <div class="task">
+              <div class="task" data-task-detail>
                 <div class="check"></div>
                 <div><b>渣打大额产品定价流程发起</b><p>来源：群消息；关联：Project Dscale</p></div>
-                <span class="tag warn">待处理</span>
+                <span class="tag warn">临期</span>
+                <div class="task-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item"><span>owner</span><b>Dscale 产品负责人</b></div>
+                    <div class="detail-item"><span>截止</span><b>2026-06-06</b></div>
+                    <div class="detail-item"><span>来源</span><b>飞书群消息</b></div>
+                  </div>
+                  <p>任务详情：发起大额信贷产品定价流程，补充 SCB 所需材料和客户分层口径。</p>
+                  <div class="task-insights">
+                    <div class="insight-card"><h4>责任人反馈</h4><p>Dscale 产品负责人已开始整理定价口径，等待 SCB RM 补充内部审批要求。</p></div>
+                    <div class="insight-card"><h4>评论重点总结</h4><p>群聊重点集中在额度区间、利率下限、客户材料模板和审批时间预期。</p></div>
+                    <div class="insight-card"><h4>完成风险分析</h4><p>风险中；若 SCB 定价规则未明确，可能影响首批客户沟通和 0714 活动口径。</p></div>
+                  </div>
+                </div>
               </div>
+              <div class="task" data-task-detail>
+                <div class="check"></div>
+                <div><b>Fastlane 审批材料补件确认</b><p>来源：会议纪要；关联：Project Dscale</p></div>
+                <span class="tag danger">逾期</span>
+                <div class="task-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item"><span>owner</span><b>BD / 客户经理</b></div>
+                    <div class="detail-item"><span>截止</span><b>2026-05-31</b></div>
+                    <div class="detail-item"><span>来源</span><b>产品会纪要</b></div>
+                  </div>
+                  <p>任务详情：确认 Fastlane 审批材料补件状态，并同步 SCB RM 是否可进入下一步审批。</p>
+                  <div class="task-insights">
+                    <div class="insight-card"><h4>责任人反馈</h4><p>客户经理尚未更新完整补件状态，部分财务材料仍待客户确认。</p></div>
+                    <div class="insight-card"><h4>评论重点总结</h4><p>相关方关注材料缺口、客户授权文件和是否影响 Dscale 首批 POC 节奏。</p></div>
+                    <div class="insight-card"><h4>完成风险分析</h4><p>风险高；任务已逾期，建议 PMO 当日提醒 owner，并同步升级给 Dscale 负责人。</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
         </section>
@@ -1510,6 +2164,71 @@
 
   <button class="assistant-tab" id="assistantTab" aria-label="打开 AI 悬窗"><span>AI 协作</span></button>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="archiveUploadModal" aria-label="新增档案上传悬窗">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>新增档案</h2>
+        <button id="closeArchiveUpload" aria-label="关闭">×</button>
+      </div>
+      <div class="upload-zone">
+        <div>
+          <b>上传、粘贴链接，或从周期报告提取</b>
+          <p>支持会议纪要、协议、提案、产品资料、日常沟通记录，也可以从日报、周报中抽取需要沉淀的档案。</p>
+          <div class="upload-actions">
+            <button class="secondary-btn" id="mockArchiveFileUpload">模拟上传文件</button>
+            <button class="secondary-btn" id="mockArchiveFeishuLink">模拟粘贴飞书链接</button>
+            <button class="secondary-btn" id="mockArchiveDailyExtract">从日报提取</button>
+            <button class="secondary-btn" id="mockArchiveWeeklyExtract">从周报提取</button>
+          </div>
+          <span class="upload-status" id="archiveUploadStatus">尚未上传文件或链接</span>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="archiveTitleInput">档案标题</label>
+          <input id="archiveTitleInput" placeholder="上传后由 AI 识别生成">
+        </div>
+        <div class="field">
+          <label for="archiveCategoryInput">建议分类</label>
+          <select id="archiveCategoryInput">
+            <option value="" selected>上传后由 AI 建议</option>
+            <option>会议纪要</option>
+            <option>战略背景</option>
+            <option>协议文档</option>
+            <option>日常工作记录</option>
+            <option>汇报文档</option>
+            <option>产品资料</option>
+            <option>客户资料</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="archiveRelatedInput">关联对象</label>
+          <input id="archiveRelatedInput" placeholder="上传后自动关联业务线、客户或任务">
+        </div>
+        <div class="field">
+          <label for="archiveSourceInput">来源</label>
+          <select id="archiveSourceInput">
+            <option value="" selected>待识别来源</option>
+            <option>飞书云文档</option>
+            <option>飞书 Wiki</option>
+            <option>本地文件</option>
+            <option>飞书群消息</option>
+            <option>会议纪要</option>
+            <option>日报</option>
+            <option>周报</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <label for="archiveNoteInput">AI 归档说明</label>
+          <textarea id="archiveNoteInput" placeholder="上传后自动生成摘要、分类理由和建议关联对象"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="cancelArchiveUpload">取消</button>
+        <button class="primary-btn" id="submitArchiveUpload" disabled>提交归档</button>
+      </div>
+    </div>
+  </div>
   <aside class="assistant" id="assistantPanel" aria-label="AI 协作悬窗">
     <header>
       <b id="assistantTitle">AI 协作悬窗</b>
@@ -1520,7 +2239,6 @@
       <button data-prompt="上传会议纪要并拆解待办">上传纪要</button>
       <button data-prompt="生成 0714 GBA Summit 客户邀约海报文案">生成材料</button>
       <button data-prompt="总结 Project Dscale 当前卡点">问知识库</button>
-      <button data-prompt="生成本周 SCB 战略合作周报">写周报</button>
       <button data-prompt="列出过去 7 天没有更新的客户">风险提醒</button>
     </div>
     <div class="chat-body" id="chatBody">
@@ -1541,9 +2259,10 @@
     const themeButtons = document.querySelectorAll("[data-theme-choice]");
     const viewModeButtons = document.querySelectorAll("[data-view-mode]");
     const toast = document.getElementById("toast");
+    const archiveUploadModal = document.getElementById("archiveUploadModal");
     let currentView = "workbench";
     let lastPmoView = "workbench";
-    let selectedLoginProfile = "scb";
+    const detectedLoginProfile = "scb";
 
     const workspaceProfiles = {
       scb: {
@@ -1551,30 +2270,21 @@
         accountScope: "SCB 授权空间",
         workspaceLabel: "SCB 样板间 / MVP 1.0",
         title: "SCB 战略合作管理",
-        subtitle: "当前账号仅加载渣打相关项目、文档、群聊、任务和客户数据。",
-        scopeTitle: "当前工作区：渣打银行 SCB",
-        scopeText: "已模拟完成飞书授权，可读取 SCB 相关云文档、Wiki、重点群聊、任务和多维表格作为 AI 上下文。",
-        scopeTag: "SCB PMO"
+        subtitle: "当前账号仅加载渣打相关项目、文档、群聊、任务和客户数据。"
       },
       hsbc: {
         accountName: "汇丰 PMO",
         accountScope: "HSBC 授权空间",
         workspaceLabel: "HSBC 工作区 / 待接入",
         title: "汇丰战略合作管理",
-        subtitle: "当前账号仅加载汇丰相关内容；SCB 文档、任务和客户数据不可见。",
-        scopeTitle: "当前工作区：汇丰银行 HSBC",
-        scopeText: "已模拟完成飞书授权。正式接入后，将从汇丰对应 Wiki、云文档、群聊、任务和 Base 中生成专属项目线与汇报视图。",
-        scopeTag: "HSBC PMO"
+        subtitle: "当前账号仅加载汇丰相关内容；SCB 文档、任务和客户数据不可见。"
       },
       admin: {
         accountName: "系统管理员",
         accountScope: "跨资方配置权限",
         workspaceLabel: "Admin / 多资方底座",
         title: "战略资方管理系统配置台",
-        subtitle: "用于配置资方工作区、飞书数据源、账号角色和跨资方权限边界。",
-        scopeTitle: "当前工作区：系统管理员",
-        scopeText: "管理员可配置多个资方的授权入口和数据源，但业务内容仍按用户角色与资方权限隔离。",
-        scopeTag: "Admin"
+        subtitle: "用于配置资方工作区、飞书数据源、账号角色和跨资方权限边界。"
       }
     };
 
@@ -1592,21 +2302,10 @@
       document.getElementById("workspaceLabel").textContent = profile.workspaceLabel;
       document.getElementById("workspaceTitle").textContent = profile.title;
       document.getElementById("workspaceSubtitle").textContent = profile.subtitle;
-      document.getElementById("scopeTitle").textContent = profile.scopeTitle;
-      document.getElementById("scopeText").textContent = profile.scopeText;
-      document.getElementById("scopeTag").textContent = profile.scopeTag;
     }
 
-    document.querySelectorAll("[data-login-profile]").forEach((button) => {
-      button.addEventListener("click", () => {
-        selectedLoginProfile = button.dataset.loginProfile;
-        document.querySelectorAll("[data-login-profile]").forEach((item) => item.classList.toggle("active", item === button));
-        showToast(`已选择：${button.querySelector("strong").textContent}`);
-      });
-    });
-
     document.getElementById("feishuLogin").addEventListener("click", () => {
-      applyWorkspaceProfile(selectedLoginProfile);
+      applyWorkspaceProfile(detectedLoginProfile);
       document.getElementById("loginGate").classList.add("hidden");
       currentView = "workbench";
       lastPmoView = "workbench";
@@ -1619,7 +2318,135 @@
 
     document.getElementById("switchAccount").addEventListener("click", () => {
       document.getElementById("loginGate").classList.remove("hidden");
-      showToast("请重新选择飞书授权身份");
+      showToast("请重新进行飞书授权");
+    });
+
+    document.getElementById("rejectLogin").addEventListener("click", () => {
+      showToast("已拒绝授权，无法进入系统工作区");
+    });
+
+    function switchMainView(viewId, message) {
+      navButtons.forEach((item) => item.classList.toggle("active", item.dataset.view === viewId));
+      views.forEach((view) => view.classList.toggle("active", view.id === viewId));
+      viewModeButtons.forEach((item) => item.classList.toggle("active", item.dataset.viewMode === "pmo"));
+      currentView = viewId;
+      lastPmoView = viewId;
+      updateAssistantContext();
+      showToast(message);
+    }
+
+    function openArchiveUpload() {
+      resetArchiveUploadForm();
+      archiveUploadModal.classList.add("open");
+      showToast("已打开档案上传悬窗");
+    }
+
+    function closeArchiveUpload() {
+      archiveUploadModal.classList.remove("open");
+    }
+
+    function resetArchiveUploadForm() {
+      document.getElementById("archiveTitleInput").value = "";
+      document.getElementById("archiveCategoryInput").value = "";
+      document.getElementById("archiveRelatedInput").value = "";
+      document.getElementById("archiveSourceInput").value = "";
+      document.getElementById("archiveNoteInput").value = "";
+      document.getElementById("archiveUploadStatus").textContent = "尚未上传文件或链接";
+      document.getElementById("submitArchiveUpload").disabled = true;
+    }
+
+    function mockAnalyzeArchive(sourceType) {
+      const archiveSamples = {
+        file: {
+          status: "已上传：0529 SCB 合作进展更新.docx",
+          toast: "已模拟上传文件，正在生成归档建议",
+          title: "0529 SCB 合作进展更新",
+          category: "会议纪要",
+          related: "Project Dscale、eCAS、企业开户",
+          source: "本地文件",
+          note: "AI 建议归档为会议纪要：内容覆盖 SCB 合作进展、eCAS 审批联调、Project Dscale 客户推进及企业开户事项，建议关联合作业务线、客户推进和任务 Follow-up。"
+        },
+        feishu: {
+          status: "已粘贴飞书文档链接，AI 正在识别内容",
+          toast: "已读取飞书文档链接，正在生成归档建议",
+          title: "0714 活动客户邀约讨论记录",
+          category: "日常工作记录",
+          related: "市场活动及品牌共建、客户邀约、物料口径",
+          source: "飞书云文档",
+          note: "AI 建议归档为日常工作记录：内容涉及 0714 GBA Summit 客户邀约、联合品牌露出和物料口径确认，建议关联市场活动及品牌共建模块，并生成待确认任务。"
+        },
+        daily: {
+          status: "已读取今日日报，正在抽取可归档内容",
+          toast: "正在从日报中提取档案建议",
+          title: "0602 SCB 日报关键沟通记录",
+          category: "日常工作记录",
+          related: "eCAS、Project Dscale、任务 Follow-up",
+          source: "日报",
+          note: "AI 建议从日报中抽取为日常工作记录：包含 eCAS 审批跟进、Dscale 客户材料缺口、SCB RM 反馈和当日决策卡点，建议关联对应业务线和待办任务。"
+        },
+        weekly: {
+          status: "已读取本周周报，正在抽取可沉淀档案",
+          toast: "正在从周报中提取档案建议",
+          title: "本周 SCB 合作进展与风险汇总",
+          category: "汇报文档",
+          related: "合作业务线、客户推进、市场活动及品牌共建",
+          source: "周报",
+          note: "AI 建议从周报中抽取为汇报文档：沉淀本周 eCAS、Project Dscale、开户合作和 0714 活动的进展、风险、资源诉求及下一步行动。"
+        }
+      };
+      const sample = archiveSamples[sourceType] || archiveSamples.file;
+      document.getElementById("archiveUploadStatus").textContent = sample.status;
+      showToast(sample.toast);
+      window.setTimeout(() => {
+        document.getElementById("archiveTitleInput").value = sample.title;
+        document.getElementById("archiveCategoryInput").value = sample.category;
+        document.getElementById("archiveRelatedInput").value = sample.related;
+        document.getElementById("archiveSourceInput").value = sample.source;
+        document.getElementById("archiveNoteInput").value = sample.note;
+        document.getElementById("archiveUploadStatus").textContent = "AI 已生成标题、分类、关联对象和归档说明";
+        document.getElementById("submitArchiveUpload").disabled = false;
+        showToast("AI 归档建议已生成，可人工修改后提交");
+      }, 450);
+    }
+
+    document.getElementById("openArchiveUpload").addEventListener("click", openArchiveUpload);
+    document.getElementById("closeArchiveUpload").addEventListener("click", closeArchiveUpload);
+    document.getElementById("cancelArchiveUpload").addEventListener("click", closeArchiveUpload);
+    document.getElementById("mockArchiveFileUpload").addEventListener("click", () => mockAnalyzeArchive("file"));
+    document.getElementById("mockArchiveFeishuLink").addEventListener("click", () => mockAnalyzeArchive("feishu"));
+    document.getElementById("mockArchiveDailyExtract").addEventListener("click", () => mockAnalyzeArchive("daily"));
+    document.getElementById("mockArchiveWeeklyExtract").addEventListener("click", () => mockAnalyzeArchive("weekly"));
+    archiveUploadModal.addEventListener("click", (event) => {
+      if (event.target === archiveUploadModal) closeArchiveUpload();
+    });
+    document.getElementById("submitArchiveUpload").addEventListener("click", () => {
+      if (document.getElementById("submitArchiveUpload").disabled) return;
+      closeArchiveUpload();
+      showToast("已提交为待处理档案，AI 将生成分类和关联建议");
+    });
+    document.getElementById("goPortfolioFromWorkbench").addEventListener("click", () => {
+      switchMainView("portfolio", "已切换到：合作业务线");
+    });
+    document.getElementById("goCampaignsFromWorkbench").addEventListener("click", () => {
+      document.querySelectorAll("[data-campaign-tab]").forEach((item) => item.classList.toggle("active", item.dataset.campaignTab === "activity"));
+      document.querySelectorAll("[data-campaign-pane]").forEach((item) => item.classList.toggle("active", item.dataset.campaignPane === "activity"));
+      switchMainView("campaigns", "已切换到：市场活动及品牌共建");
+    });
+    document.getElementById("refreshClientBase").addEventListener("click", () => {
+      showToast("已从授权飞书 Base 拉取最新客户推进数据");
+    });
+    document.querySelectorAll(".data-source-action").forEach((button) => {
+      button.addEventListener("click", () => {
+        const sourceType = button.dataset.sourceType || "数据源";
+        document.getElementById("clientEmptyTitle").textContent = "AI 正在分析客户推进数据";
+        document.getElementById("clientEmptyText").textContent = `已接入${sourceType}，正在识别客户字段、产品线归属、客户状态、材料缺口和下一步动作。`;
+        showToast(`已接入${sourceType}，开始智能分析`);
+        window.setTimeout(() => {
+          document.getElementById("clientsEmpty").classList.add("is-hidden");
+          document.querySelectorAll(".client-data-loaded").forEach((item) => item.classList.remove("is-hidden"));
+          showToast("智能分析完成，已生成客户推进表");
+        }, 900);
+      });
     });
 
     navButtons.forEach((button) => {
@@ -1677,6 +2504,17 @@
       });
     });
 
+    document.querySelectorAll("[data-business-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const pane = button.dataset.businessTab;
+        document.querySelectorAll("[data-business-tab]").forEach((item) => item.classList.toggle("active", item === button));
+        document.querySelectorAll("[data-business-pane]").forEach((item) => item.classList.toggle("active", item.dataset.businessPane === pane));
+        currentView = "portfolio";
+        updateAssistantContext();
+        showToast(`已打开合作业务线：${button.textContent.trim()}`);
+      });
+    });
+
     document.querySelectorAll("[data-client-tab]").forEach((button) => {
       button.addEventListener("click", () => {
         const pane = button.dataset.clientTab;
@@ -1688,10 +2526,379 @@
       });
     });
 
+    document.querySelectorAll("[data-open-client-pane]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const pane = card.dataset.openClientPane;
+        document.querySelectorAll("[data-client-tab]").forEach((item) => item.classList.toggle("active", item.dataset.clientTab === pane));
+        document.querySelectorAll("[data-client-pane]").forEach((item) => item.classList.toggle("active", item.dataset.clientPane === pane));
+        currentView = "clients";
+        updateAssistantContext();
+        showToast("已进入待跟进事项详情");
+      });
+    });
+
+    function bindTaskDetail(task) {
+      task.addEventListener("click", (event) => {
+        if (event.target.closest("button") || event.target.closest(".check") || event.target.closest(".ai-mark") || event.target.closest("input, textarea, select")) return;
+        task.classList.toggle("expanded");
+        const title = task.querySelector("b")?.textContent || "任务";
+        showToast(task.classList.contains("expanded") ? `已展开任务：${title}` : `已收起任务：${title}`);
+      });
+    }
+
+    document.querySelectorAll("[data-task-detail]").forEach(bindTaskDetail);
+
+    function confirmAiTask(task, options = {}) {
+      const title = task.querySelector("b")?.textContent || "任务";
+      const status = task.querySelector(".tag");
+      if (status) {
+        const dueText = task.querySelector(".detail-item:nth-child(2) b")?.textContent || "";
+        const dueStatus = getTaskDueStatus(dueText);
+        status.textContent = dueStatus.label;
+        status.className = dueStatus.className;
+      }
+      const mark = task.querySelector(".ai-mark");
+      if (mark) {
+        const check = document.createElement("div");
+        check.className = "check";
+        mark.replaceWith(check);
+      }
+      task.querySelectorAll(".detail-item span").forEach((label) => {
+        label.textContent = label.textContent.replace(/^建议 owner$/, "owner").replace(/^建议截止$/, "截止");
+      });
+      const description = task.querySelector(".task-detail p");
+      if (description) {
+        description.textContent = description.textContent.replace(/^AI 建议任务描述：/, "任务详情：");
+      }
+      addExecutionInsights(task, title);
+      const detailActions = task.querySelector(".detail-actions");
+      if (detailActions) detailActions.remove();
+      task.classList.remove("expanded", "selected");
+      document.getElementById("taskList").prepend(task);
+      updateUrgentTaskActions();
+      applyTaskFilters();
+      const aiCount = document.getElementById("aiTaskCount");
+      const confirmedCount = document.getElementById("confirmedTaskCount");
+      aiCount.textContent = Math.max(0, Number(aiCount.textContent) - 1);
+      confirmedCount.textContent = Number(confirmedCount.textContent) + 1;
+      if (!options.silent) showToast(`已确认任务并移入执行中：${title}`);
+      return title;
+    }
+
+    function getTaskDueStatus(dueText) {
+      const dueDate = new Date(`${dueText}T23:59:59+08:00`);
+      if (Number.isNaN(dueDate.getTime())) return { label: "待处理", className: "tag warn" };
+      const today = new Date("2026-06-02T00:00:00+08:00");
+      const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      if (daysLeft < 0) return { label: "逾期", className: "tag danger" };
+      if (daysLeft <= 7) return { label: "临期", className: "tag warn" };
+      return { label: "待处理", className: "tag" };
+    }
+
+    function updateUrgentTaskActions(scope = document) {
+      scope.querySelectorAll("#taskList .task").forEach((task) => {
+        const status = task.querySelector(".tag");
+        const statusText = status?.textContent.trim() || "";
+        if (!status || !["临期", "逾期"].includes(statusText)) return;
+        if (status.closest(".task-status-actions")) return;
+        const wrapper = document.createElement("div");
+        wrapper.className = "task-status-actions";
+        status.replaceWith(wrapper);
+        const remindButton = document.createElement("button");
+        remindButton.className = "remind-btn";
+        remindButton.textContent = "催办";
+        remindButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const title = task.querySelector("b")?.textContent || "任务";
+          showToast(`已发送飞书催办：${title}`);
+        });
+        wrapper.appendChild(remindButton);
+        if (statusText === "逾期") {
+          const escalateButton = document.createElement("button");
+          escalateButton.className = "escalate-btn";
+          escalateButton.textContent = "问题升级";
+          escalateButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const title = task.querySelector("b")?.textContent || "任务";
+            const owner = getTaskOwner(task) || "任务责任人";
+            showToast(`已将投诉升级消息推送给 ${owner} 的直属上级：${title}`);
+          });
+          wrapper.appendChild(escalateButton);
+        }
+        wrapper.appendChild(status);
+      });
+    }
+
+    function addExecutionInsights(task, title) {
+      const detail = task.querySelector(".task-detail");
+      if (!detail || detail.querySelector(".task-insights")) return;
+      const riskText = title.includes("eCAS")
+        ? "风险中高；SCB 内部审批和技术联调窗口仍未完全锁定，建议 PMO 每周追踪并升级关键节点。"
+        : title.includes("0714")
+          ? "风险中；物料口径若未及时统一，会影响客户邀约、联合品牌露出和现场转化。"
+          : title.includes("Fastlane")
+            ? "风险中；审批材料缺口可能拖慢 POC 进度，需要 owner 明确补件清单和截止时间。"
+            : "风险中；客户状态分散会影响周报、产品决策和 SCB 资源协调。";
+      const ownerText = title.includes("eCAS")
+        ? "Kevin / FI 对接人需确认 SCB 审批状态、技术联调窗口和上线倒排计划。"
+        : title.includes("0714")
+          ? "Marketing / PMO 需同步品牌、合规和活动负责人，统一所有对外物料口径。"
+          : title.includes("Fastlane")
+            ? "BD / 客户经理需补齐审批材料，并在客户推进表更新材料状态。"
+            : "PMO / BD 需补齐首批客户审批、授信、材料和下一步动作。";
+      const commentText = title.includes("eCAS")
+        ? "相关方评论集中在审批透明度、联调排期、上线时间和是否需要管理层推动。"
+        : title.includes("0714")
+          ? "评论重点集中在联合品牌露出、客户邀约话术、产品 one-pager 和合规审核节奏。"
+          : title.includes("Fastlane")
+            ? "评论重点集中在财务信息、经营数据、授权材料和 SCB 审批反馈口径。"
+            : "评论重点集中在客户优先级、授信路径、材料缺口和 RM 反馈更新频率。";
+      const insights = document.createElement("div");
+      insights.className = "task-insights";
+      insights.innerHTML = `
+        <div class="insight-card"><h4>责任人反馈</h4><p>${ownerText}</p></div>
+        <div class="insight-card"><h4>评论重点总结</h4><p>${commentText}</p></div>
+        <div class="insight-card"><h4>完成风险分析</h4><p>${riskText}</p></div>
+      `;
+      detail.appendChild(insights);
+    }
+
+    function getTaskBusinessLine(task) {
+      const text = task.textContent || "";
+      if (text.includes("eCAS")) return "eCAS";
+      if (text.includes("Dscale") || text.includes("Project Dscale") || text.includes("Fastlane") || text.includes("联科") || text.includes("远睿")) return "Project Dscale";
+      if (text.includes("企业开户") || text.includes("开户 / Digital Onboarding") || text.includes("首批 POC")) return "企业开户";
+      if (text.includes("个人开户") || text.includes("企业主")) return "个人开户";
+      if (text.includes("0714") || text.includes("GBA Summit") || text.includes("市场活动") || text.includes("物料")) return "市场活动及品牌共建";
+      return "其他";
+    }
+
+    function getTaskOwner(task) {
+      const ownerItem = Array.from(task.querySelectorAll(".detail-item")).find((item) => item.querySelector("span")?.textContent.trim() === "owner");
+      return ownerItem?.querySelector("b")?.textContent.trim() || "";
+    }
+
+    function getMultiSelectValues(id) {
+      const select = document.getElementById(id);
+      const values = Array.from(select?.selectedOptions || []).map((option) => option.value);
+      return values.length ? values : ["all"];
+    }
+
+    function applyTaskFilters() {
+      const lineValues = getMultiSelectValues("taskLineFilter");
+      const statusValues = getMultiSelectValues("taskStatusFilter");
+      const ownerValue = document.getElementById("taskOwnerFilter")?.value || "all";
+      const tasks = Array.from(document.querySelectorAll("#taskList .task"));
+      let visibleCount = 0;
+      tasks.forEach((task) => {
+        const line = getTaskBusinessLine(task);
+        const status = task.querySelector(".tag")?.textContent.trim() || "";
+        const owner = getTaskOwner(task);
+        const matchLine = lineValues.includes("all") || lineValues.includes(line);
+        const matchStatus = statusValues.includes("all") || statusValues.includes(status);
+        const matchOwner = ownerValue === "all" || owner.includes(ownerValue) || (ownerValue === "BD" && owner.includes("客户经理"));
+        const visible = matchLine && matchStatus && matchOwner;
+        task.classList.toggle("is-hidden", !visible);
+        if (visible) visibleCount += 1;
+      });
+      return visibleCount;
+    }
+
+    ["taskLineFilter", "taskStatusFilter"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("change", (event) => {
+        const select = event.target;
+        const selectedValues = Array.from(select.selectedOptions).map((option) => option.value);
+        if (selectedValues.includes("all") && selectedValues.length > 1) {
+          Array.from(select.options).forEach((option) => {
+            option.selected = option.value === "all" ? false : option.selected;
+          });
+        }
+        if (!Array.from(select.selectedOptions).length) select.querySelector('option[value="all"]').selected = true;
+        const visibleCount = applyTaskFilters();
+        showToast(`已筛选出 ${visibleCount} 条执行中任务`);
+      });
+    });
+
+    document.getElementById("taskOwnerFilter")?.addEventListener("change", () => {
+      const visibleCount = applyTaskFilters();
+      showToast(`已筛选出 ${visibleCount} 条执行中任务`);
+    });
+
+    document.getElementById("resetTaskFilters")?.addEventListener("click", () => {
+      ["taskLineFilter", "taskStatusFilter"].forEach((id) => {
+        const select = document.getElementById(id);
+        Array.from(select.options).forEach((option) => {
+          option.selected = option.value === "all";
+        });
+      });
+      document.getElementById("taskOwnerFilter").value = "all";
+      const visibleCount = applyTaskFilters();
+      showToast(`已重置筛选，共 ${visibleCount} 条执行中任务`);
+    });
+
+    updateUrgentTaskActions();
+
+    function bindAiMark(mark) {
+      mark.addEventListener("click", () => {
+        const task = mark.closest(".task");
+        task.classList.toggle("selected");
+        const title = task.querySelector("b")?.textContent || "任务";
+        updateSelectAllAiTasksLabel();
+        showToast(task.classList.contains("selected") ? `已选择待确认任务：${title}` : `已取消选择：${title}`);
+      });
+    }
+
+    document.querySelectorAll("#aiTaskList .ai-mark").forEach(bindAiMark);
+
+    function updateSelectAllAiTasksLabel() {
+      const tasks = Array.from(document.querySelectorAll("#aiTaskList .task"));
+      const selectedCount = tasks.filter((task) => task.classList.contains("selected")).length;
+      const button = document.getElementById("selectAllAiTasks");
+      if (!button) return;
+      button.textContent = tasks.length && selectedCount === tasks.length ? "取消全选" : "全选";
+    }
+
+    document.getElementById("selectAllAiTasks")?.addEventListener("click", () => {
+      const tasks = Array.from(document.querySelectorAll("#aiTaskList .task"));
+      if (!tasks.length) {
+        showToast("当前没有待选择的 AI 建议任务");
+        return;
+      }
+      const shouldSelectAll = tasks.some((task) => !task.classList.contains("selected"));
+      tasks.forEach((task) => task.classList.toggle("selected", shouldSelectAll));
+      updateSelectAllAiTasksLabel();
+      showToast(shouldSelectAll ? `已全选 ${tasks.length} 条 AI 建议任务` : "已取消全选");
+    });
+
+    document.getElementById("batchConfirmAiTasks")?.addEventListener("click", () => {
+      const selectedTasks = Array.from(document.querySelectorAll("#aiTaskList .task.selected"));
+      if (!selectedTasks.length) {
+        showToast("请先点击 AI 标识选择要批量确认的任务");
+        return;
+      }
+      selectedTasks.forEach((task) => confirmAiTask(task, { silent: true }));
+      updateSelectAllAiTasksLabel();
+      showToast(`已批量确认 ${selectedTasks.length} 条任务，并移入执行中`);
+    });
+
+    function bindPrimaryTaskAction(button) {
+      button.addEventListener("click", () => {
+        if (button.textContent.trim() !== "确认任务") return;
+        const task = button.closest(".task");
+        confirmAiTask(task);
+      });
+    }
+
+    document.querySelectorAll(".detail-actions .primary-btn").forEach(bindPrimaryTaskAction);
+
+    function bindSecondaryTaskAction(button) {
+      button.addEventListener("click", () => {
+        const action = button.textContent.trim();
+        const taskDetail = button.closest(".task-detail");
+        if (action === "修改内容") {
+          taskDetail.querySelectorAll(".detail-item").forEach((item) => {
+            const value = item.querySelector("b")?.textContent || "";
+            item.dataset.originalValue = value;
+            item.querySelector("b").replaceWith(Object.assign(document.createElement("input"), { value }));
+          });
+          const desc = taskDetail.querySelector("p");
+          const descValue = desc.textContent.replace(/^AI 建议任务描述：/, "").replace(/^任务详情：/, "");
+          desc.replaceWith(Object.assign(document.createElement("textarea"), { value: descValue }));
+          button.textContent = "保存修改";
+          showToast("已进入编辑模式，可手动修改 owner、截止时间和任务内容");
+          return;
+        }
+        if (action === "保存修改") {
+          taskDetail.querySelectorAll(".detail-item").forEach((item) => {
+            const input = item.querySelector("input");
+            if (!input) return;
+            const strong = document.createElement("b");
+            strong.textContent = input.value || item.dataset.originalValue || "-";
+            input.replaceWith(strong);
+          });
+          const textarea = taskDetail.querySelector("textarea");
+          if (textarea) {
+            const p = document.createElement("p");
+            p.textContent = `AI 建议任务描述：${textarea.value}`;
+            textarea.replaceWith(p);
+          }
+          button.textContent = "修改内容";
+          showToast("任务建议内容已保存，待 PMO 确认");
+          return;
+        }
+        if (action === "驳回建议") {
+          const task = button.closest(".task");
+          const title = task.querySelector("b")?.textContent || "任务";
+          task.remove();
+          const aiCount = document.getElementById("aiTaskCount");
+          aiCount.textContent = Math.max(0, Number(aiCount.textContent) - 1);
+          showToast(`已驳回并删除建议任务：${title}`);
+          return;
+        }
+      });
+    }
+
+    document.querySelectorAll(".detail-actions .secondary-btn").forEach(bindSecondaryTaskAction);
+
+    function createAiTaskFromFollowup(followup, index) {
+      const title = followup.querySelector("b")?.textContent || "客户待跟进事项";
+      const summary = followup.querySelector("p")?.textContent || "来自客户推进表待跟进事项。";
+      const type = followup.querySelector(".tag")?.textContent.trim() || "待跟进";
+      const owner = type.includes("RM") ? "SCB RM / PMO" : type.includes("审批") ? "PMO / 产品负责人" : "客户经理 / PMO";
+      const due = type.includes("审批") ? "2026-06-05" : type.includes("RM") ? "2026-06-06" : "2026-06-07";
+      const task = document.createElement("div");
+      task.className = "task";
+      task.setAttribute("data-task-detail", "");
+      task.innerHTML = `
+        <div class="ai-mark">AI</div>
+        <div><b>${title}</b><p>来源：客户推进待跟进事项 AI 分析；建议关联：客户推进；需 PMO 确认任务内容。</p></div>
+        <span class="tag warn">${type.includes("审批") ? "待修改" : "待人审"}</span>
+        <div class="task-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><span>建议 owner</span><b>${owner}</b></div>
+            <div class="detail-item"><span>建议截止</span><b>${due}</b></div>
+            <div class="detail-item"><span>来源依据</span><b>客户推进表：${summary}</b></div>
+          </div>
+          <p>AI 建议任务描述：请根据客户推进表待跟进事项，确认 owner、截止时间、下一步动作，并同步更新客户推进状态。</p>
+          <div class="detail-actions"><button class="primary-btn">确认任务</button><button class="secondary-btn">修改内容</button><button class="secondary-btn">驳回建议</button></div>
+        </div>
+      `;
+      bindTaskDetail(task);
+      bindAiMark(task.querySelector(".ai-mark"));
+      task.querySelectorAll(".detail-actions .primary-btn").forEach(bindPrimaryTaskAction);
+      task.querySelectorAll(".detail-actions .secondary-btn").forEach(bindSecondaryTaskAction);
+      return task;
+    }
+
+    document.getElementById("generateFollowupTasks")?.addEventListener("click", () => {
+      const followups = Array.from(document.querySelectorAll("[data-client-pane='followups'] .task-list .task"));
+      const checked = followups.filter((task) => task.querySelector(".check")?.style.background);
+      const sourceTasks = checked.length ? checked : followups;
+      let created = 0;
+      sourceTasks.forEach((followup, index) => {
+        if (followup.dataset.generatedTask === "true") return;
+        document.getElementById("aiTaskList").prepend(createAiTaskFromFollowup(followup, index));
+        followup.dataset.generatedTask = "true";
+        created += 1;
+      });
+      if (!created) {
+        showToast("这些待跟进事项已经生成过 AI 建议任务");
+        return;
+      }
+      const aiCount = document.getElementById("aiTaskCount");
+      aiCount.textContent = Number(aiCount.textContent) + created;
+      switchMainView("tasks", `已生成 ${created} 条 AI 建议任务，并同步到任务 Follow-up`);
+    });
+
+    document.getElementById("returnWorkbenchFromReport")?.addEventListener("click", () => {
+      viewModeButtons.forEach((item) => item.classList.toggle("active", item.dataset.viewMode === "pmo"));
+      switchMainView("workbench", "已返回 PMO 工作台");
+    });
+
     document.addEventListener("click", (event) => {
       const target = event.target;
       const actionButton = target.closest("button");
-      if (actionButton && !actionButton.closest(".nav") && !actionButton.matches("[data-theme-choice]") && !actionButton.matches("[data-view-mode]") && !actionButton.matches("[data-campaign-tab]") && !actionButton.matches(".choice-chip") && !actionButton.matches("[data-login-profile]") && actionButton.id !== "feishuLogin" && actionButton.id !== "switchAccount" && actionButton.id !== "sendAssistant" && actionButton.id !== "closeAssistant") {
+      if (actionButton && !actionButton.closest(".nav") && !actionButton.matches("[data-theme-choice]") && !actionButton.matches("[data-view-mode]") && !actionButton.matches("[data-campaign-tab]") && !actionButton.matches("[data-business-tab]") && !actionButton.matches(".choice-chip") && !actionButton.matches(".data-source-action") && !actionButton.matches(".remind-btn") && !actionButton.matches(".escalate-btn") && !actionButton.closest(".modal-backdrop") && actionButton.id !== "feishuLogin" && actionButton.id !== "rejectLogin" && actionButton.id !== "switchAccount" && actionButton.id !== "openArchiveUpload" && actionButton.id !== "refreshClientBase" && actionButton.id !== "goPortfolioFromWorkbench" && actionButton.id !== "goCampaignsFromWorkbench" && actionButton.id !== "selectAllAiTasks" && actionButton.id !== "batchConfirmAiTasks" && actionButton.id !== "generateFollowupTasks" && actionButton.id !== "resetTaskFilters" && actionButton.id !== "returnWorkbenchFromReport" && actionButton.id !== "screenReportContext" && actionButton.id !== "copyReportDraft" && actionButton.id !== "generateReport" && actionButton.id !== "sendAssistant" && actionButton.id !== "closeAssistant") {
         showToast(`已触发：${actionButton.textContent.trim()}`);
       }
 
@@ -1705,6 +2912,7 @@
 
       const row = target.closest(".project-row, .client-row, .material-row, .metric, .tag");
       if (row && !target.closest("button")) {
+        if (row.matches("[data-open-client-pane]")) return;
         const label = row.querySelector("b")?.textContent || row.querySelector("span")?.textContent || row.textContent.trim().slice(0, 18);
         showToast(`已选中：${label}`);
       }
@@ -1760,36 +2968,38 @@
       const focusText = focus.length ? focus.join("、") : "eCAS 上线卡点、Dscale 资产池";
       document.getElementById("reportDraftTitle").textContent = `SCB 战略合作${cycle}草稿`;
       document.getElementById("reportStatusMetric").textContent = "已生成";
-      document.getElementById("reportDraft").textContent =
+      document.getElementById("reportScreenStatus").textContent = "草稿已生成，可继续手动修改或筛选飞书/微信内容补充。";
+      document.getElementById("reportDraft").value =
         `汇报对象：${audience}\n汇报类型：${cycle}\n\n一、整体判断\nSCB 战略合作当前仍以 eCAS 落地、Project Dscale 资产池推进和 0714 GBA Summit 转化为主线。整体推进方向清晰，但 eCAS 审批与技术联调、Dscale 批量进件 SOP、活动物料口径仍需要持续跟进。\n\n二、本次重点\n${focusText}\n\n三、关键进展\n1. eCAS：Dowsure 已提交合规及审批材料，当前重点是推动 SCB 内部审批和技术联调排期。\n2. Project Dscale：继续围绕首批 POC 客户、授信材料和 100M USD 资产池目标推进。\n3. 市场活动及品牌共建：0714 GBA Summit 需要同步客户邀约名单、联合品牌露出口径和 Dscale 活动版 one-pager。\n\n四、需要升级 / 决策事项\n建议管理层关注 eCAS 上线时间承诺、Dscale 客户池优先级和 SCB 对联合活动资源投入。\n\n五、下一步行动\n确认 eCAS 联调排期；更新 Dscale 客户推进表；统一 0714 活动物料版本；沉淀本周会议 Follow-up。`;
       showToast("已生成汇报草稿");
     }
 
     document.getElementById("generateReport").addEventListener("click", buildReportDraft);
+    document.getElementById("screenReportContext").addEventListener("click", () => {
+      const draft = document.getElementById("reportDraft");
+      const supplement = `\n\n六、飞书 / 微信补充筛选\n1. 飞书项目群：SCB RM 提醒 Dscale 首批客户材料口径需与 0714 活动 one-pager 保持一致，建议补充为本周重点风险。\n2. 飞书任务：eCAS 技术联调排期仍未锁定，需 PMO 在下次周会前确认 SCB FI 团队窗口。\n3. 微信沟通：客户侧对 GBA Summit 现场开户及 Dscale 产品说明有兴趣，建议把客户邀约名单与客户推进表联动更新。\n\n七、补充后的建议动作\n将“物料口径统一”“eCAS 联调排期确认”“客户邀约名单联动客户推进表”同步生成任务 Follow-up，并在下次汇报中单独追踪。`;
+      draft.value = `${draft.value.trim()}\n${supplement}`;
+      document.getElementById("reportScreenStatus").textContent = "已筛选飞书项目群、飞书任务和微信沟通，并补充到草稿末尾。";
+      document.getElementById("reportStatusMetric").textContent = "已补充";
+      showToast("已筛选飞书/微信相关内容并补充汇报草稿");
+    });
     document.getElementById("copyReportDraft").addEventListener("click", () => {
-      const text = document.getElementById("reportDraft").textContent;
+      const text = document.getElementById("reportDraft").value;
       navigator.clipboard?.writeText(text);
       showToast("已复制汇报草稿");
     });
-    document.getElementById("openReportAssistant").addEventListener("click", () => {
-      currentView = "report";
-      updateAssistantContext();
-      openAssistant();
-      addAssistantMessage("我可以按对象、周期、重点事项来引导生成汇报。你可以先选左侧选项，也可以直接告诉我这次要给谁看。");
-    });
-
     const assistantContexts = {
       workbench: {
         title: "PMO 工作台 AI 协作",
-        intro: "这里优先帮你处理今日待办、逾期事项、项目卡点和周报摘要。MVP 1.0 先支持手动任务闭环。",
-        placeholder: "例如：把今天 eCAS、Dscale 和 0714 活动的待办整理成一份 PMO 日报。",
+        intro: "这里优先帮你处理今日待办、逾期事项、业务线卡点和风险提醒。MVP 1.0 先支持手动任务闭环。",
+        placeholder: "例如：帮我给 eCAS 技术联调创建一个今天 18:00 前完成的任务。",
         actions: [
           ["新建任务", "新建任务："],
           ["整理今日待办", "整理今天必须推进的 SCB 事项"],
-          ["生成周报", "生成本周 SCB 战略合作周报"],
           ["识别风险", "列出当前需要升级的项目卡点"],
           ["更新项目状态", "更新 eCAS 和 Dscale 的项目状态"],
-          ["写管理摘要", "生成给 Byron 的 5 行管理摘要"]
+          ["会议 Follow-up", "整理最近会议未闭环事项"],
+          ["任务提醒", "生成飞书群任务提醒文案"]
         ]
       },
       report: {
@@ -1806,16 +3016,16 @@
         ]
       },
       portfolio: {
-        title: "项目组合 AI 协作",
-        intro: "这里优先帮你管理项目线状态、里程碑、owner、风险和下一步动作。",
-        placeholder: "例如：对比 eCAS 和 Dscale 的当前卡点，并给出下一步推进任务。",
+        title: "合作业务线 AI 协作",
+        intro: "这里按合作业务线展开管理，不把不同业务硬塞进项目组合。AI 可以帮你梳理某条业务线的目标、阶段、指标、卡点、客户联动和下一步动作。",
+        placeholder: "例如：帮我梳理 Project Dscale 业务线当前目标、卡点和下一步动作。",
         actions: [
-          ["新增项目线", "新增项目线："],
-          ["项目健康度", "评估 eCAS 和 Dscale 的项目健康度"],
+          ["新增业务线", "新增合作业务线："],
+          ["业务线健康度", "评估当前合作业务线健康度"],
           ["拆里程碑", "把 eCAS 6 月底上线倒推成任务"],
-          ["生成复盘", "生成 Project Dscale 阶段复盘"],
-          ["更新风险", "列出项目组合中的高风险卡点"],
-          ["owner 检查", "检查项目线 owner 是否缺失"]
+          ["业务线复盘", "生成 Project Dscale 业务线阶段复盘"],
+          ["更新卡点", "列出当前业务线中的高风险卡点"],
+          ["下一步动作", "拆解当前业务线下一步动作"]
         ]
       },
       clients: {
@@ -1859,7 +3069,7 @@
       },
       archive: {
         title: "档案库 AI 协作",
-        intro: "归档规则：先按战略背景、协议、纪要、提案、产品资料、客户资料等大类归档；每份档案再关联项目线、客户、活动、任务、物料或风险事项。这里可用于待归档资料分类、摘要生成和决策依据追溯。",
+        intro: "归档规则：先按战略背景、协议、纪要、提案、汇报文档、产品资料、客户资料等大类归档；每份档案再关联项目线、客户、活动、任务、物料或风险事项。这里可用于待归档资料分类、摘要生成和决策依据追溯。",
         placeholder: "例如：把 0424 workshop material 归到纪要，并关联 Dscale、eCAS 和市场活动。",
         actions: [
           ["智能归档", "把待处理档案按大类归档"],
