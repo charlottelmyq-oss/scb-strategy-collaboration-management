@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>战略合作系统入口</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --ink: #17212b;
+      --muted: #687482;
+      --panel: #ffffff;
+      --line: #dbe2ea;
+      --blue: #1464f4;
+      --green: #16825d;
+      --dark: #101820;
+      --shadow: 0 20px 56px rgba(20, 31, 45, 0.12);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(20, 100, 244, 0.1), rgba(22, 130, 93, 0.08) 46%, transparent 72%),
+        var(--bg);
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      min-height: 68px;
+      padding: 14px clamp(18px, 4vw, 46px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid rgba(219, 226, 234, 0.82);
+      background: rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, #1464f4, #16825d);
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .brand strong,
+    .brand span {
+      display: block;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .brand span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      min-height: 32px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+    }
+
+    main {
+      padding: clamp(28px, 7vw, 76px) clamp(18px, 5vw, 72px) 34px;
+      display: grid;
+      align-content: center;
+      gap: 30px;
+    }
+
+    .hero {
+      max-width: 980px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .kicker {
+      margin: 0;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.78;
+    }
+
+    .entry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 980px;
+    }
+
+    .entry-card {
+      min-height: 280px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .entry-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 5px;
+      background: var(--blue);
+    }
+
+    .entry-card.secondary::before {
+      background: var(--green);
+    }
+
+    .entry-head {
+      display: grid;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .entry-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: rgba(20, 100, 244, 0.1);
+      color: var(--blue);
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .secondary .entry-icon {
+      background: rgba(22, 130, 93, 0.11);
+      color: var(--green);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .entry-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .tag {
+      min-height: 26px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--muted);
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .entry-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .primary-link,
+    .copy-link {
+      min-height: 42px;
+      border-radius: 8px;
+      padding: 0 15px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .primary-link {
+      background: var(--dark);
+      color: #ffffff;
+    }
+
+    .copy-link {
+      background: #ffffff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .primary-link[aria-disabled="true"],
+    .copy-link[disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .notice {
+      max-width: 980px;
+      display: none;
+      border: 1px solid rgba(167, 101, 0, 0.3);
+      background: rgba(255, 245, 222, 0.82);
+      color: #7b4e00;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .notice.visible {
+      display: block;
+    }
+
+    footer {
+      padding: 18px clamp(18px, 4vw, 46px) 24px;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 780px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .entry-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .entry-card {
+        min-height: 240px;
+      }
+
+      .primary-link,
+      .copy-link {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SCB</div>
+        <div>
+          <strong>战略合作系统入口</strong>
+          <span>统一跳转页 / 外部访问入口</span>
+        </div>
+      </div>
+      <div class="status"><i></i><span>入口页已就绪</span></div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="pageTitle">
+        <p class="kicker">STRATEGIC PARTNER PORTAL</p>
+        <h1 id="pageTitle">请选择需要进入的系统</h1>
+        <p>该页面用于对外统一分发入口，避免在沟通中反复发送多个系统地址。正式外发前，请确认下方两个入口均已配置为可公网访问的稳定链接。</p>
+      </section>
+
+      <section class="entry-grid" aria-label="系统入口">
+        <article class="entry-card">
+          <div class="entry-head">
+            <div class="entry-icon">A</div>
+            <div>
+              <h2>战略资方管理 AI 系统</h2>
+              <p>进入当前战略合作资方管理系统，查看合作进展、任务、风险、客户推进和汇报草稿。</p>
+            </div>
+            <div class="meta">
+              <span class="tag">SCB 样板间</span>
+              <span class="tag">MVP Demo</span>
+            </div>
+          </div>
+          <div class="entry-actions">
+            <a class="primary-link" id="currentSystemLink" href="./scb-strategy-mvp-demo.html">进入系统</a>
+            <button class="copy-link" type="button" data-copy="current">复制链接</button>
+          </div>
+        </article>
+
+        <article class="entry-card secondary">
+          <div class="entry-head">
+            <div class="entry-icon">B</div>
+            <div>
+              <h2 id="otherSystemTitle">另一系统入口</h2>
+              <p id="otherSystemDesc">用于跳转到配套系统。把正式链接配置好后，该入口可随导流页一起对外发送。</p>
+            </div>
+            <div class="meta">
+              <span class="tag" id="otherSystemStatus">待配置正式链接</span>
+              <span class="tag">外部访问</span>
+            </div>
+          </div>
+          <div class="entry-actions">
+            <a class="primary-link" id="otherSystemLink" href="#" aria-disabled="true">进入系统</a>
+            <button class="copy-link" type="button" data-copy="other" disabled>复制链接</button>
+          </div>
+        </article>
+      </section>
+
+      <div class="notice" id="configNotice">
+        另一系统链接尚未配置。你可以编辑页面顶部的 PORTAL_CONFIG.otherSystemUrl，或在外发地址后追加参数：?other=https%3A%2F%2Fexample.com。
+      </div>
+    </main>
+
+    <footer>
+      <span>建议将本页与两个系统链接一起发布到同一个稳定域名下。</span>
+      <span id="copyFeedback" aria-live="polite"></span>
+    </footer>
+  </div>
+
+  <script>
+    const PORTAL_CONFIG = {
+      currentSystemUrl: "./scb-strategy-mvp-demo.html",
+      otherSystemUrl: "",
+      otherSystemName: "另一系统入口",
+      otherSystemDescription: "用于跳转到配套系统。把正式链接配置好后，该入口可随导流页一起对外发送。"
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const config = {
+      currentSystemUrl: params.get("current") || PORTAL_CONFIG.currentSystemUrl,
+      otherSystemUrl: params.get("other") || PORTAL_CONFIG.otherSystemUrl,
+      otherSystemName: params.get("otherName") || PORTAL_CONFIG.otherSystemName,
+      otherSystemDescription: params.get("otherDesc") || PORTAL_CONFIG.otherSystemDescription
+    };
+
+    const currentLink = document.getElementById("currentSystemLink");
+    const otherLink = document.getElementById("otherSystemLink");
+    const otherTitle = document.getElementById("otherSystemTitle");
+    const otherDesc = document.getElementById("otherSystemDesc");
+    const otherStatus = document.getElementById("otherSystemStatus");
+    const notice = document.getElementById("configNotice");
+    const feedback = document.getElementById("copyFeedback");
+
+    currentLink.href = config.currentSystemUrl;
+    otherTitle.textContent = config.otherSystemName;
+    otherDesc.textContent = config.otherSystemDescription;
+
+    if (config.otherSystemUrl) {
+      otherLink.href = config.otherSystemUrl;
+      otherLink.removeAttribute("aria-disabled");
+      otherStatus.textContent = "已配置正式链接";
+      document.querySelector('[data-copy="other"]').disabled = false;
+    } else {
+      notice.classList.add("visible");
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(new URL(text, window.location.href).href);
+        feedback.textContent = "链接已复制";
+      } catch (error) {
+        feedback.textContent = "当前浏览器不支持自动复制，请打开入口后复制地址栏链接";
+      }
+
+      window.setTimeout(() => {
+        feedback.textContent = "";
+      }, 2400);
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = button.dataset.copy === "current" ? config.currentSystemUrl : config.otherSystemUrl;
+        if (target) copyText(target);
+      });
+    });
+
+    document.querySelectorAll(".primary-link").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        if (link.getAttribute("aria-disabled") === "true") {
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+        window.location.href = link.href;
+      });
+    });
+  </script>
+</body>
+</html>
